@@ -1,5 +1,5 @@
+function formatData(data) {
+    dateFormat(data, 'yyyy-mm-dd,HH:MM:ss ');
+}
 
-
-
-
-dateFormat(new Date(), 'yyyy-mm-dd,HH:MM:ss ');
+module.exports = formatData();

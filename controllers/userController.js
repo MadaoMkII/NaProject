@@ -1,40 +1,36 @@
-const agent = require('../modules/angent');
 const config = require('../config/develop')
-
+const agentModel = require('../modules/agent');
 
 exports.addAgent = function (req, res) {
-    let testdata = {};
-    testdata.username = req.body.username;
-    testdata.stationname = req.body.stationname;
 
-    agent.isDuplicationName(testdata, (err, flag) => {
-
-        if (err) console.log(err);
-
-        if (flag) return res.status(406).json({
-            success: false,
-            message: 'Duplication Username or StationName with:' + flag.stationname
-        });
-
-        let result = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
-        let userInfo = {
-            'username': req.body.username,
-            'password': result,
-            'country': req.user.country,
-            'role': 'Agent',
-            'stationname': req.body.stationname,
-            'receiverate': req.body.receiverate,
-            'publishrate': req.body.publishrate
-        };
-
-        agent.addNewAgent(userInfo);
+    let result = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
+    let userInfo = {
+        'username': req.body.username,
+        'password': result,
+        'country': req.user.country,
+        'role': 'Agent',
+        'stationname': req.body.stationname,
+        'receiverate': req.body.receiverate,
+        'publishrate': req.body.publishrate
+    };
+    let agentEntity = new agentModel(userInfo);
+    agentEntity.save(userInfo, (err) => {
+        if (err) {
+            if (err.toString().includes('duplicate')) {
+                return res.status(406).json({
+                    success: false,
+                    message: 'Duplication Username or StationName with Statian‘s name :' + userInfo.stationname
+                });
+            } else {
+                return res.status(409).json({success: false, message: 'Error happen when adding to DB'});
+            }
+        }
         return res.status(200).json(userInfo);
+    });
 
 
-    })
+}
 
-
-};
 
 // exports.addAdmin = function (req, res) {
 //     //todo

@@ -1,7 +1,7 @@
 const checkOrderModel = require('../modules/checkOrder');
 const orderModel = require('../modules/orderForm');
-const angentModel = require('../modules/angent');
-
+const angentModel = require('../modules/agent');
+var dateFormat = require('dateformat');
 let addOrderForm = function (req, res) {
     // let positions = req.body.publishPosition;
     //let real = req.body.publishPositions;
@@ -9,7 +9,7 @@ let addOrderForm = function (req, res) {
 
     let orderInformation = ({
         adName: '哇哈哈', adType: 'guangao',
-        adBeginDate: new Date(), adEndDate: new Date(),
+        adBeginDate: "23", adEndDate: new Date(),
         spreadType: 'wechat', spreadAmount: 1000,
         draweeName: 'da lao', paymentMethod: 'payapl',
         receivePosition: 'S1', publishPositions: ['S2', 'S1', 'S3'],
@@ -17,36 +17,39 @@ let addOrderForm = function (req, res) {
         remark: 'sdf'
     });
 
-
+    let flag = false;
     let publishPositions = orderInformation.publishPositions;
-
-
+    if (publishPositions.contains(orderInformation.receivePosition)) {
+        flag = true;
+    }
+    publishPositions.push(orderInformation.receivePosition);
     if (null != publishPositions && Array.isArray(publishPositions)) {
 
         angentModel.findByPositionName(publishPositions, (err, result) => {
             if (err) console.log(err);
-
             result.forEach((element) => {
-                let shouldPay = Math.round(orderInformation.spreadAmount
-                    / publishPositions.length * element.publishrate * 100) / 100;
 
-                let checkOrder = {
-                    adStatus: 'Ongoing',
-                    adName: orderInformation.adName,
-                    adBeginDate: orderInformation.adBeginDate,
-                    adEndDate: orderInformation.adEndDate,
-                    receivePosition: orderInformation.receivePosition,
-                    publishPosition: element.stationname,
-                    dealerWechat: orderInformation.dealerWechat,
-                    orderTotalPaidAmont: shouldPay,
-                    remark: orderInformation.remark
-                };
+                if (flag || element.stationname !== orderInformation.receivePosition) {
+                    let shouldPay = Math.round(orderInformation.spreadAmount
+                        / publishPositions.length * element.publishrate * 100) / 100;
+                    let checkOrder = {
+                        adStatus: 'Ongoing',
+                        adName: orderInformation.adName,
+                        adBeginDate: orderInformation.adBeginDate,
+                        adEndDate: orderInformation.adEndDate,
+                        receivePosition: orderInformation.receivePosition,
+                        publishPosition: element.stationname,
+                        dealerWechat: orderInformation.dealerWechat,
+                        orderTotalPaidAmont: shouldPay,
+                        remark: orderInformation.remark
+                    };
 
-                new checkOrderModel(checkOrder).save((err, data) => {
+                    new checkOrderModel(checkOrder).save((err, data) => {
+                        console.log(data)
+                        if (err) console.log(err);
 
-                    if (err) console.log(err);
-
-                });
+                    });
+                }
             })
         });
 
