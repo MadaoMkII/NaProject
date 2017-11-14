@@ -1,12 +1,8 @@
-{"salt":124,
+{
     "development": {
+    "salt":124,
     "redisPort": 6379,
         "redisHost": "127.0.0.1",
         "errorHandlerOptions": {"dumpExceptions": true, "showStack": true}
-},
-    "production": {
-    "redisPort": 6379,
-        "redisHost": "46.137.195.230",
-        "errorHandlerOptions": {"dumpExceptions": false, "showStack": false}
 }
 }

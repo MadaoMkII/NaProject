@@ -1,14 +1,25 @@
-const ab = require('./models/angent');
-const dateFormat = require('dateformat');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    autoIncrement = require('mongoose-auto-increment');
 
-// ab.isDuplicationName('abc2', (err, data) => {
-//
-//     console.log(data);
-// });
+var connection = mongoose.createConnection("mongodb://localhost/myDatabase");
 
-ab.getAllAgent((err, data) => {
+autoIncrement.initialize(connection);
+mongoose.Promise = global.Promise;
+var bookSchema = new Schema({
+    // author: { type: Schema.Types.ObjectId, ref: 'Author' },
+    title: String,
+    genre: String,
+    publishDate: Date, id: Number
+});
+bookSchema.plugin(autoIncrement.plugin, {model: 'Book', field: 'bookId'});
 
-    let x = new Date();
-    let u = dateFormat(x, 'yyyy-mm-dd,HH:MM:ss ')
-    console.log(u);
-})
+var Book = connection.model('Book', bookSchema);
+new Book({
+    title: 'das',
+    genre: 'sadad',
+    publishDate: new Date()
+}).save((err, data) => {
+
+    console.log(data);
+});

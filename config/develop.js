@@ -5,6 +5,6 @@ module.exports = {
         secret: 'abc',
         resave: true,
         saveUninitialized: true
-    }
-
+    },
+    saltword: 'ABL'
 }

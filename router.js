@@ -40,7 +40,7 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
 
 app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);
 
-app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.addAdmin);
+// app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 
 app.get('/abc', isAuthenticated('Super_Admin'), function (req, res, err) {
 

@@ -26,16 +26,5 @@ exports.getAllAgent = function (callback) {
         })
 }
 
-exports.isDuplicationName = function (username, callback) {
-
-    agentModel.findOne({'username': username}, (err, agents) => {
-
-        if (err) return null;
-        if (agents) return callback(null, agents);
-        return callback(err, false);
-
-    })
-}
-
 
 exports.agentModel = agentModel;

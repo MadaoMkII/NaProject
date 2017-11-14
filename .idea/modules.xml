@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/naProject.iml" filepath="$PROJECT_DIR$/.idea/naProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/passport-http-master.iml" filepath="$PROJECT_DIR$/.idea/passport-http-master.iml" />
     </modules>
   </component>
 </project>
