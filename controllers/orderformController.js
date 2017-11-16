@@ -1,37 +1,49 @@
 const checkOrderModel = require('../modules/checkOrder');
-const orderModel = require('../modules/orderForm');
 const angentModel = require('../modules/agent');
-var dateFormat = require('dateformat');
-let addOrderForm = function (req, res) {
-    // let positions = req.body.publishPosition;
-    //let real = req.body.publishPositions;
+exports.addOrderForm = function (req, res, next) {
 
-
-    let orderInformation = ({
-        adName: '哇哈哈', adType: 'guangao',
-        adBeginDate: "23", adEndDate: new Date(),
-        spreadType: 'wechat', spreadAmount: 1000,
-        draweeName: 'da lao', paymentMethod: 'payapl',
-        receivePosition: 'S1', publishPositions: ['S2', 'S1', 'S3'],
-        dealerWechat: '战1', dealerPhone: 4087997598,
-        remark: 'sdf'
-    });
-
+    let orderInformation = req.body;
     let flag = false;
     let publishPositions = orderInformation.publishPositions;
-    if (publishPositions.contains(orderInformation.receivePosition)) {
+
+    if (publishPositions.includes(orderInformation.receivePosition)) {
         flag = true;
+    } else {
+        publishPositions.push(orderInformation.receivePosition);
     }
-    publishPositions.push(orderInformation.receivePosition);
-    if (null != publishPositions && Array.isArray(publishPositions)) {
+    let tempNumber = publishPositions.length;
 
-        angentModel.findByPositionName(publishPositions, (err, result) => {
-            if (err) console.log(err);
+    if (null !== publishPositions && Array.isArray(publishPositions)) {
+
+        angentModel.findByPositionName(publishPositions, (error, result) => {
+            if (error) return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
             result.forEach((element) => {
-
+                let shouldPay, checkOrder;
                 if (flag || element.stationname !== orderInformation.receivePosition) {
-                    let shouldPay = Math.round(orderInformation.spreadAmount
-                        / publishPositions.length * element.publishrate * 100) / 100;
+                    shouldPay = Math.round(orderInformation.orderTotalAmont
+                        / tempNumber * element.publishrate * 100) / 100;
+
+                    checkOrder = {
+                        adStatus: 'Ongoing',
+                        adName: orderInformation.adName,
+                        adBeginDate: orderInformation.adBeginDate,
+                        adEndDate: orderInformation.adEndDate,
+                        receivePosition: orderInformation.receivePosition,
+                        customerWechat: orderInformation.customerWechat,
+                        orderAmont: shouldPay,
+                        remark: orderInformation.remark
+                    };
+
+                  let x=  new checkOrderModel(checkOrder).save().catch((err) => {
+                        console.log(111111);
+                        res.status(503).json({success: false, message: 'Error happen when adding to DB'});
+                        return 'a';
+                    });
+                }
+                if (element.stationname === orderInformation.receivePosition) {
+                    let shouldPay = Math.round(orderInformation.orderTotalAmont
+                        * element.receiverate * 100) / 100;
+
                     let checkOrder = {
                         adStatus: 'Ongoing',
                         adName: orderInformation.adName,
@@ -39,50 +51,28 @@ let addOrderForm = function (req, res) {
                         adEndDate: orderInformation.adEndDate,
                         receivePosition: orderInformation.receivePosition,
                         publishPosition: element.stationname,
-                        dealerWechat: orderInformation.dealerWechat,
-                        orderTotalPaidAmont: shouldPay,
+                        customerWechat: orderInformation.customerWechat,
+                        orderAmont: shouldPay,
                         remark: orderInformation.remark
                     };
 
                     new checkOrderModel(checkOrder).save((err, data) => {
-                        console.log(data)
-                        if (err) console.log(err);
+
+                        if (err) {
+                            return res.status(209).send({message: 'hhhh'})
+                        } else {
+                            return res.status(201).send({message: '@!!!!!!!'})
+                            // res.status(200); .json({success: true, message: 'Order has been added to DB'});
+                        }
 
                     });
+
                 }
+
             })
         });
 
     }
-    // publishPositions.forEach((publishPositionName) => {
-    //     console.log(publishPositionName);
-    //
-    //
-    // })
 
 
-    // let orderentity = new orderModel(ceshiOrder[0]);
-    // orderentity.save((err,data)=>{
-    //
-    //
-    // })
-
-
-// positions.forEach((position) => {
-//
-//
-//     let checkOrderEntity = new checkOrderModel(position);
-//     checkOrderEntity.save((err, data) => {
-//
-//         if (err) {
-//             console.log('chu shi le!');
-//         } else {
-//             console.log(data);
-//         }
-//     })
-//
-// })
-
-
-}
-addOrderForm();
+};

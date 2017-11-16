@@ -19,7 +19,7 @@ exports.addAgent = function (req, res) {
             if (err.toString().includes('duplicate')) {
                 return res.status(406).json({
                     success: false,
-                    message: 'Duplication Username or StationName with Statian‘s name :' + userInfo.stationname
+                    message: 'Duplication Username or StationName. The Statian‘s name :' + userInfo.stationname
                 });
             } else {
                 return res.status(409).json({success: false, message: 'Error happen when adding to DB'});

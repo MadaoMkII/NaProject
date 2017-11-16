@@ -1,10 +1,12 @@
 var express = require('express');
 var passport = require('passport');
 const userController = require('./controllers/userController');
+const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
 var bodyParser = require('body-parser');
 var session = require('express-session');
+
 var json_body_parser = bodyParser.json();
 var urlencoded_body_parser = bodyParser.urlencoded({extended: true});
 const passportService = require('./config/passport');
@@ -37,6 +39,7 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
         '  Your username is : ' + req.user.username
     });
 });
+app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);
 
 app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);
 

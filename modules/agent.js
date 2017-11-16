@@ -18,11 +18,26 @@ let agentSchema = new mongoose.Schema({
     receiverate: Number,
     publishrate: Number
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});
-let agentModel = mongoose.model('Agent', agentSchema);
 
-exports.addNewAgent = function (userinfo) {
+
+agentSchema.statics.findByPositionName = function (stationname, callback) {
+
+    agentModel.find({stationname: {"$in": stationname}}, {
+        _id: 0,
+        receiverate: 1,
+        publishrate: 1,
+        stationname: 1
+    }, (err, agents) => {
+
+        if (err) console.log(err + '!');
+        return callback(err, agents);
+
+    })
+}
+
+
+agentSchema.statics.addNewAgent = function (userinfo) {
     let agentEntity = new agentModel(userinfo);
-
     agentEntity.save(function (err, data) {
 
         if (err) {
@@ -33,7 +48,7 @@ exports.addNewAgent = function (userinfo) {
     })
 
 
-    exports.findByUserName = function (username, callback) {
+    agentSchema.statics.findByUserName = function (username, callback) {
 
         agentModel.find({'username': username}, 'name occupation', (err, agents) => {
 
@@ -42,21 +57,8 @@ exports.addNewAgent = function (userinfo) {
 
         })
     }
-    exports.findByPositionName = function (stationname, callback) {
 
-        agentModel.find({stationname: {"$in": stationname}}, {
-            _id: 0,
-            receiverate: 1,
-            publishrate: 1,
-            stationname: 1
-        }, (err, agents) => {
-
-            if (err) console.log(err + '!');
-            return callback(err, agents);
-
-        })
-    }
-    exports.getAllAgent = function (callback) {
+    agentSchema.statics.getAllAgent = function (callback) {
         agentModel.find({'role': {$eq: 'Agent'}}, 'username country role stationname receiverate publishrate createtimestamp',
             (err, agents) => {
                 if (err) return console.log(err);
@@ -65,7 +67,7 @@ exports.addNewAgent = function (userinfo) {
             })
     }
 
-    exports.isDuplicationName = function (data, callback) {
+    agentSchema.statics.isDuplicationName = function (data, callback) {
 
         agentModel.findOne({$or: [{'username': data.username, 'stationname': data.stationname}]}, (err, agents) => {
 
@@ -77,5 +79,6 @@ exports.addNewAgent = function (userinfo) {
 
     }
 }
-module.exports = agentModel;
+let agentModel = mongoose.model('Agent', agentSchema);
+module.exports = exports = mongoose.model('Agent');
 
