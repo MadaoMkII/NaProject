@@ -4,9 +4,10 @@ let autoIncrement = require('mongoose-auto-increment');
 const orderFormSchema = new mongoose.Schema({
     adName: String, adType: String,
     adBeginDate: Date, adEndDate: Date,
-    spreadType: String, orderTotalAmont: Number,
+    publishType: String, orderTotalAmont: {required: true, type: Number},
     customerName: String, paymentMethod: String,
-    receivePosition: String, publishPositions: [],
+    receivePosition: {required: true, type: String},
+    publishPositions: [String],
     customerWechat: String, customerPhone: String,
     remark: String, adContinue: Boolean
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});

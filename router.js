@@ -29,7 +29,18 @@ app.use(passport.session());
 // authentication.
 // Create a new Express application.
 // Configure Express application.
+function catcher(callback) {
+    return (req, res, next) => {
+        process.on('unhandledRejection', (reason, p) => {
+            console.log('Unhandled Rejection at:', p, 'reason:', reason);
+            // application specific logging, throwing an error, or other logic here
+        });
+    };
+}
+function errorResponse(req, res, err) {
 
+    res.status(478).json({anc:'!!!!!!!!!!'});
+}
 
 app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
 
@@ -39,7 +50,7 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
         '  Your username is : ' + req.user.username
     });
 });
-app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);
+app.post('/addOrder', isAuthenticated('Admin'), catcher(orderformController.addOrderForm));
 
 app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);
 

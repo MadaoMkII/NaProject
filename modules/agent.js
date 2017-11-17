@@ -11,12 +11,13 @@ let agentSchema = new mongoose.Schema({
     country: String,
     role: String,
     stationname: {
+        required: true,
         type: String,
         index: true,
         unique: true
     },
-    receiverate: Number,
-    publishrate: Number
+    receiverate: {required: true, type: Number},
+    publishrate: {required: true, type: Number}
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});
 
 

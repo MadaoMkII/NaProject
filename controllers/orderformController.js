@@ -1,7 +1,7 @@
 const checkOrderModel = require('../modules/checkOrder');
 const angentModel = require('../modules/agent');
 const orderModel = require('../modules/orderForm');
-exports.addOrderForm = function (req, res) {
+exports.addOrderForm = function (req, res,next) {
 
     let orderInformation = req.body;
     let flag = false, orderErrors = [];
@@ -28,29 +28,26 @@ exports.addOrderForm = function (req, res) {
                     if (flag || element.stationname !== orderInformation.receivePosition) {
                         shouldPay = Math.round(orderInformation.orderTotalAmont
                             / tempNumber * element.publishrate * 100) / 100;
-
                         checkOrder = {
                             adStatus: 'Ongoing',
                             adName: orderInformation.adName,
                             adBeginDate: orderInformation.adBeginDate,
                             adEndDate: orderInformation.adEndDate,
                             receivePosition: orderInformation.receivePosition,
+                            publishPosition:element.stationname,
                             customerWechat: orderInformation.customerWechat,
                             orderAmont: shouldPay,
                             remark: orderInformation.remark
                         };
 
                         new checkOrderModel(checkOrder).save((err) => {
-
                             if (err) {
                                 console.log(err);
                                 orderErrors.push(err);
                             }
-
                             if (element.stationname === orderInformation.receivePosition) {
                                 let shouldPay = Math.round(orderInformation.orderTotalAmont
                                     * element.receiverate * 100) / 100;
-
                                 let checkOrder = {
                                     adStatus: 'Ongoing',
                                     adName: orderInformation.adName,
@@ -62,8 +59,8 @@ exports.addOrderForm = function (req, res) {
                                     orderAmont: shouldPay,
                                     remark: orderInformation.remark
                                 };
-
                                 new checkOrderModel(checkOrder).save((err) => {
+
                                     if (err) {
                                         orderErrors.push(err);
                                     }
@@ -76,6 +73,7 @@ exports.addOrderForm = function (req, res) {
                                         return res.status(200).send({success: true, message: 'Successed Saved'});
                                     }
                                 })
+
                             }
                         })
                     }
@@ -83,6 +81,4 @@ exports.addOrderForm = function (req, res) {
             });
         }
     })
-
-
 };

@@ -1,5 +1,5 @@
 var passport = require('passport');
-const agentModel = require('../modules/agent').agentModel;
+
 
 exports.loginUser = function (req, res, next) {
     passport.authenticate('local', function (err, user, info) {
