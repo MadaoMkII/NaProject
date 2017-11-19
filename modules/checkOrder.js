@@ -5,7 +5,9 @@ var dateFormat = require('dateformat');
 const autoIncrement = require('mongoose-auto-increment');
 const checkFormSchema = new mongoose.Schema({
     adStatus: String, adName: String, adBeginDate: Date, adEndDate: Date,
-    receivePosition: {required: true, type: String}, publishPosition: {required: true, type: String}, customerWechat: String,
+    receivePosition: {required: true, type: String}, publishPosition: {required: true, type: String},
+    customerWechat: String,
+    paymentHistory: [{paymentDate: Date, paymentAmount: Number}],
     orderAmont: {
         type: Number,
         required: true

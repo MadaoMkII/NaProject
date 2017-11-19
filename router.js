@@ -4,6 +4,7 @@ const userController = require('./controllers/userController');
 const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
+const checkController = require('./controllers/checkOrderController');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
@@ -29,35 +30,25 @@ app.use(passport.session());
 // authentication.
 // Create a new Express application.
 // Configure Express application.
-function catcher(callback) {
-    return (req, res, next) => {
-        process.on('unhandledRejection', (reason, p) => {
-            console.log('Unhandled Rejection at:', p, 'reason:', reason);
-            // application specific logging, throwing an error, or other logic here
-        });
-    };
-}
-function errorResponse(req, res, err) {
-
-    res.status(478).json({anc:'!!!!!!!!!!'});
-}
 
 app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
-
     res.status(200).json({
         success: true,
         message: 'Login successful! ' + 'Your role is : ' + req.user.role +
         '  Your username is : ' + req.user.username
     });
 });
-app.post('/addOrder', isAuthenticated('Admin'), catcher(orderformController.addOrderForm));
+app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);
+
 
 app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);
 
+app.post('/getOrderFormByDates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);
+app.post('/paycheckOrder', isAuthenticated('Admin'), checkController.payAmount);
+app.post('/getOrderForm', isAuthenticated('Admin'), orderformController.getOrderForm);
 // app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 
-app.get('/abc', isAuthenticated('Super_Admin'), function (req, res, err) {
-
+app.get('/abc', isAuthenticated('Super_Admin'), function (req, res) {
     res.json({username: 'unknow'});
 });
 

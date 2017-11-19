@@ -1,7 +1,34 @@
 const checkOrderModel = require('../modules/checkOrder');
 const angentModel = require('../modules/agent');
 const orderModel = require('../modules/orderForm');
-exports.addOrderForm = function (req, res,next) {
+
+exports.getOrderForm = (req, res) => {
+    orderModel.find({}, {_id: 0, __v: 0, updated_at: 0, created_at: 0}, (err, data) => {
+            if (err) {
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            }
+            return res.status(200).send({success: true, orderForm: data});
+        }
+    );
+};
+
+exports.getOrderFormByDates = (req, res) => {
+
+    orderModel.find({created_at: {$lt: new Date(req.body['beforeDate']), $gt: new Date(req.body['afterDate'])}}, {
+            _id: 0,
+            __v: 0,
+            updated_at: 0,
+            created_at: 0
+        }, (err, data) => {
+            if (err) {
+                console.log(err);
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            }
+            return res.status(200).send({success: true, orderForm: data});
+        }
+    );
+};
+exports.addOrderForm = function (req, res) {
 
     let orderInformation = req.body;
     let flag = false, orderErrors = [];
@@ -34,7 +61,7 @@ exports.addOrderForm = function (req, res,next) {
                             adBeginDate: orderInformation.adBeginDate,
                             adEndDate: orderInformation.adEndDate,
                             receivePosition: orderInformation.receivePosition,
-                            publishPosition:element.stationname,
+                            publishPosition: element.stationname,
                             customerWechat: orderInformation.customerWechat,
                             orderAmont: shouldPay,
                             remark: orderInformation.remark
