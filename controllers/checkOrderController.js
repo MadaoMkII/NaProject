@@ -1,5 +1,5 @@
-const checkOrderModel = require('../modules/checkOrder');
-const orderModel = require('../modules/orderForm');
+const checkOrderModel = require('../modules/orderForm').checkFormModel;
+const orderModel = require('../modules/orderForm').orderFormModel;
 
 exports.getCheckOrderForm = (req, res) => {
     checkOrderModel.find({}, {_id: 0, __v: 0, updated_at: 0, created_at: 0}, (err, data) => {
