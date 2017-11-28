@@ -124,7 +124,10 @@ exports.addOrderForm = (req, res) => {
 
 let payAmount = (req, res) => {
 
-    let paymentElement = {paymentDate: '2017-11-27 14:35:56.009', paymentAmount: 200};
+
+    //let _targetId= req.body._id;
+    let _targetId = '5a1c934cb769882638bc0d4d';
+    let paymentElement = {paymentDate: '2017-11-27 14:35:56.009', paymentAmount: 2100};
 
     // paymentElement.paymentDate = req.body['payDay'];
     // paymentElement.paymentAmount = req.body['paymentAmount'];
@@ -132,47 +135,68 @@ let payAmount = (req, res) => {
     console.log(paymentElement);
 
 //拿到之前的直接push
-    orderModel.update({
-            'checkOrderRecords._id': '5a1c934cb769882638bc0d4d'
-        }, {
-            $set: {
-                'checkOrderRecords.$.paymentHistory': [{paymentDate: new Date(), paymentAmount: 1234}]
+    orderModel.findOne({'checkOrderRecords._id': _targetId}, (err, data) => {
+
+        if(err) return ////;
+
+        let newCheckOrderRecords = [];
+        for (let checkOrder of data.checkOrderRecords) {
+
+            if (checkOrder._id.toString() === _targetId) {
+
+
+
+                console.log(checkOrder.paymentHistory);
             }
-        }, (err, data) => {
 
-            console.log(err);
-            console.log(data);
+
         }
-    );
 
-    //
-    // orderModel.findOneAndUpdate({
-    //         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
-    //     }, {
-    //         $set: {
-    //             'checkOrderRecords.0.adStatus': "1150"
-    //         }
-    //     }, (err, data) => {
-    //
-    //         console.log(err);
-    //         console.log(data);
-    //     }
-    // );
-    //orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
+        //     orderModel.update({
+        //             'checkOrderRecords._id': '5a1c934cb769882638bc0d4d'
+        //         }, {
+        //             $set: {
+        //                 'checkOrderRecords.$.paymentHistory': [{paymentDate: new Date(), paymentAmount: 1234}]
+        //             }
+        //         }, (err, data) => {
+        //
+        //             console.log(err);
+        //             console.log(data);
+        //         }
+        //     );
+        //
+        // });
 
 
-    // orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
-    //     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
-    //         'paymentAmount': paymentElement.paymentAmount}}
-    // }, (err, data) => {
-    //     if (err) {
-    //         console.log(err);
-    //         return res.status(406).send({success: false, message: 'Not Successed Saved'});
-    //     } else {
-    //         console.log(data);
-    //         return res.status(200).send({success: true, message: 'Successed Payment'});
-    //     }
-    // });
+        //
+        // orderModel.findOneAndUpdate({
+        //         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
+        //     }, {
+        //         $set: {
+        //             'checkOrderRecords.0.adStatus': "1150"
+        //         }
+        //     }, (err, data) => {
+        //
+        //         console.log(err);
+        //         console.log(data);
+        //     }
+        // );
+        //orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
 
-};
+
+        // orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
+        //     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
+        //         'paymentAmount': paymentElement.paymentAmount}}
+        // }, (err, data) => {
+        //     if (err) {
+        //         console.log(err);
+        //         return res.status(406).send({success: false, message: 'Not Successed Saved'});
+        //     } else {
+        //         console.log(data);
+        //         return res.status(200).send({success: true, message: 'Successed Payment'});
+        //     }
+        // });
+
+    });
+}
 payAmount(null, null);
