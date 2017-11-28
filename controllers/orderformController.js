@@ -1,7 +1,6 @@
 const angentModel = require('../modules/agent');
-const checkOrderModel = require('../modules/orderForm').checkFormModel;
 const orderModel = require('../modules/orderForm').orderFormModel;
-
+const checkModel = require('../modules/orderForm').checkFormModel;
 exports.getOrderForm = (req, res) => {
     orderModel.find({}, {_id: 0, __v: 0, updated_at: 0, created_at: 0}, (err, data) => {
             if (err) {
@@ -11,7 +10,6 @@ exports.getOrderForm = (req, res) => {
         }
     );
 };
-
 exports.getOrderFormByDates = (req, res) => {
 
     orderModel.find({created_at: {$lt: new Date(req.body['beforeDate']), $gt: new Date(req.body['afterDate'])}}, {
@@ -28,7 +26,7 @@ exports.getOrderFormByDates = (req, res) => {
         }
     );
 };
-exports.addOrderForm = function (req, res) {
+exports.addOrderForm = (req, res) => {
 
     let orderInformation = req.body;
     let flag = false;
@@ -60,11 +58,11 @@ exports.addOrderForm = function (req, res) {
         orderForm.checkOrderRecords = [];
     }
     {
-        if (null !== publishPositions && Array.isArray(publishPositions)) {
+        if (!(null !== publishPositions && Array.isArray(publishPositions))) {
+        } else {
 
             angentModel.findByPositionName(publishPositions, (error, result) => {
                 if (error) return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
-                let checkid = 0;
                 result.forEach((element) => {
                     let shouldPay, checkOrder;
                     if (flag || element.stationname !== orderInformation.receivePosition) {
@@ -72,7 +70,6 @@ exports.addOrderForm = function (req, res) {
                             / tempNumber * element.publishrate * 100) / 100;
 
                         checkOrder = {
-                            checkid: checkid++,
                             adStatus: 'Ongoing',
                             job: 'publish',
                             adName: orderInformation.adName,
@@ -92,7 +89,6 @@ exports.addOrderForm = function (req, res) {
                             * element.receiverate * 100) / 100;
 
                         let checkOrder = {
-                            checkid: checkid++,
                             adStatus: 'Ongoing',
                             job: 'receive',
                             adName: orderInformation.adName,
@@ -109,12 +105,8 @@ exports.addOrderForm = function (req, res) {
 
                     }
                 });
-                console.log(orderForm)
-
-
                 orderForm.save((err, data) => {
                     if (err) {
-                        console.log(err);
                         res.status(503).send({
                             success: false,
                             message: 'Error Happened , please check input data!'
@@ -130,3 +122,57 @@ exports.addOrderForm = function (req, res) {
     }
 };
 
+let payAmount = (req, res) => {
+
+    let paymentElement = {paymentDate: '2017-11-27 14:35:56.009', paymentAmount: 200};
+
+    // paymentElement.paymentDate = req.body['payDay'];
+    // paymentElement.paymentAmount = req.body['paymentAmount'];
+
+    console.log(paymentElement);
+
+//拿到之前的直接push
+    orderModel.update({
+            'checkOrderRecords._id': '5a1c934cb769882638bc0d4d'
+        }, {
+            $set: {
+                'checkOrderRecords.$.paymentHistory': [{paymentDate: new Date(), paymentAmount: 1234}]
+            }
+        }, (err, data) => {
+
+            console.log(err);
+            console.log(data);
+        }
+    );
+
+    //
+    // orderModel.findOneAndUpdate({
+    //         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
+    //     }, {
+    //         $set: {
+    //             'checkOrderRecords.0.adStatus': "1150"
+    //         }
+    //     }, (err, data) => {
+    //
+    //         console.log(err);
+    //         console.log(data);
+    //     }
+    // );
+    //orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
+
+
+    // orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
+    //     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
+    //         'paymentAmount': paymentElement.paymentAmount}}
+    // }, (err, data) => {
+    //     if (err) {
+    //         console.log(err);
+    //         return res.status(406).send({success: false, message: 'Not Successed Saved'});
+    //     } else {
+    //         console.log(data);
+    //         return res.status(200).send({success: true, message: 'Successed Payment'});
+    //     }
+    // });
+
+};
+payAmount(null, null);

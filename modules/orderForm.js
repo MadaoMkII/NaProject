@@ -6,7 +6,7 @@ const checkFormSchema = new mongoose.Schema({
     receiveStation: {required: true, type: String}, shouldPayStation: {required: true, type: String},
     customerWechat: String,
     paymentHistory: [{paymentDate: Date, paymentAmount: Number}],
-    job:String,checkid:Number,
+    job:String,
     orderAmont: {
         type: Number,
         required: true

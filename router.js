@@ -4,7 +4,7 @@ const userController = require('./controllers/userController');
 const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
-const checkController = require('./controllers/checkOrderController');
+
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
@@ -38,13 +38,11 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
         '  Your username is : ' + req.user.username
     });
 });
-app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);
+app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);//DONE
+app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);//done
 
-
-app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);
-
-app.post('/getOrderFormByDates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);
-app.post('/paycheckOrder', isAuthenticated('Admin'), checkController.payAmount);
+app.post('/getOrderFormByDates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
+//app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//doing
 app.post('/getOrderForm', isAuthenticated('Admin'), orderformController.getOrderForm);
 // app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 
