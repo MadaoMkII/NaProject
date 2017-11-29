@@ -1,6 +1,7 @@
 const angentModel = require('../modules/agent');
 const orderModel = require('../modules/orderForm').orderFormModel;
-const checkModel = require('../modules/orderForm').checkFormModel;
+
+
 exports.getOrderForm = (req, res) => {
     orderModel.find({}, {_id: 0, __v: 0, updated_at: 0, created_at: 0}, (err, data) => {
             if (err) {
@@ -122,81 +123,147 @@ exports.addOrderForm = (req, res) => {
     }
 };
 
-let payAmount = (req, res) => {
+exports.payAmount = (req, res) => {
 
-
-    //let _targetId= req.body._id;
-    let _targetId = '5a1c934cb769882638bc0d4d';
-    let paymentElement = {paymentDate: '2017-11-27 14:35:56.009', paymentAmount: 2100};
-
-    // paymentElement.paymentDate = req.body['payDay'];
-    // paymentElement.paymentAmount = req.body['paymentAmount'];
-
+    let paymentElement = {};
+    paymentElement._id = req.body['checkOrderId'];
+    paymentElement.paymentDate = req.body['payDay'];
+    paymentElement.paymentAmount = req.body['paymentAmount'];
     console.log(paymentElement);
+    orderModel.update({
+            'checkOrderRecords._id': paymentElement._id
+        }, {
+            $push: {
+                'checkOrderRecords.$.paymentHistories': {
+                    paymentDate: paymentElement.paymentDate,
+                    paymentAmount: paymentElement.paymentAmount
+                }
+            }
+        }, (err, data) => {
+            if (err) {
+                console.log(err);
+                res.status(503).send({
+                    success: false,
+                    message: 'Error Happened , please check input data!'
+                });
+            } else {
+                console.log(data);
+                res.status(200).send({success: true, message: 'Successed Saved'});
+            }
+        }
+    );
+};
 
+exports.updatePayment = (req, res) => {
 //拿到之前的直接push
-    orderModel.findOne({'checkOrderRecords._id': _targetId}, (err, data) => {
+    let paymentElement = {};
+    paymentElement.checkOrderId = req.body['checkOrderId'];
+    paymentElement.paymentId = req.body['paymentId'];
+    paymentElement.paymentDate = req.body['payDay'];
+    paymentElement.paymentAmount = req.body['paymentAmount'];
 
-        if(err) return ////;
+    orderModel.findOne({'checkOrderRecords._id': paymentElement.checkOrderId}, (err, data) => {
+            if (err) {
+                res.status(503).send({
+                    success: false,
+                    message: 'Error Happened , please check input data!'
+                });
+            }
+            if (!data) {
+                res.status(503).send({
+                    success: false,
+                    message: 'Can not find Payment history!'
+                });
+            }
 
-        let newCheckOrderRecords = [];
-        for (let checkOrder of data.checkOrderRecords) {
+            orderModel.update({
+                    'checkOrderRecords._id': paymentElement.checkOrderId
+                }, {
+                    $pull: {
+                        'checkOrderRecords.$.paymentHistories': {'_id': {$eq: paymentElement.paymentId}}
+                    },$push: {
+                    'checkOrderRecords.$.paymentHistories': {
+                        _id: paymentElement.paymentId,
+                        paymentDate: paymentElement.paymentDate,
+                        paymentAmount: paymentElement.paymentAmount
+                    }
+                }
+                }, {
 
-            if (checkOrder._id.toString() === _targetId) {
+                }, (err, data) => {
+                    if (err) {
+                        console.log(err)
+                        res.status(503).send({
+                            success: false,
+                            message: 'Error Happened , please check input data!'
+                        });
+                    } else {
+                        console.log(data)
+                        res.status(200).send({success: true, message: 'Successed Saved'});
+                    }
+                }
+            );
 
 
+            let newCheckOrderRecords = [];
 
-                console.log(checkOrder.paymentHistory);
+            for (let checkOrder of data.checkOrderRecords) {
+
+                if (checkOrder._id.toString() == paymentElement.checkOrderId) {
+
+                    for (let payh of checkOrder.paymentHistories) {
+
+                        if (payh._id.toString() === paymentElement.paymentId) {
+                            newCheckOrderRecords.push({
+                                paymentDate: paymentElement.paymentDate,
+                                paymentAmount: paymentElement.paymentAmount,
+                                _id: payh._id
+                            });
+
+                        } else {
+                            newCheckOrderRecords.push(payh);
+                        }
+                    }
+                }
+            }
+            console.log(newCheckOrderRecords);
+            if (newCheckOrderRecords[0].paymentAmount) {
+
             }
 
 
         }
+    );
+};
 
-        //     orderModel.update({
-        //             'checkOrderRecords._id': '5a1c934cb769882638bc0d4d'
-        //         }, {
-        //             $set: {
-        //                 'checkOrderRecords.$.paymentHistory': [{paymentDate: new Date(), paymentAmount: 1234}]
-        //             }
-        //         }, (err, data) => {
-        //
-        //             console.log(err);
-        //             console.log(data);
-        //         }
-        //     );
-        //
-        // });
+//
 
-
-        //
-        // orderModel.findOneAndUpdate({
-        //         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
-        //     }, {
-        //         $set: {
-        //             'checkOrderRecords.0.adStatus': "1150"
-        //         }
-        //     }, (err, data) => {
-        //
-        //         console.log(err);
-        //         console.log(data);
-        //     }
-        // );
-        //orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
+//
+// orderModel.findOneAndUpdate({
+//         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
+//     }, {
+//         $set: {
+//             'checkOrderRecords.0.adStatus': "1150"
+//         }
+//     }, (err, data) => {
+//
+//         console.log(err);
+//         console.log(data);
+//     }
+// );
+//orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
 
 
-        // orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
-        //     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
-        //         'paymentAmount': paymentElement.paymentAmount}}
-        // }, (err, data) => {
-        //     if (err) {
-        //         console.log(err);
-        //         return res.status(406).send({success: false, message: 'Not Successed Saved'});
-        //     } else {
-        //         console.log(data);
-        //         return res.status(200).send({success: true, message: 'Successed Payment'});
-        //     }
-        // });
+// orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
+//     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
+//         'paymentAmount': paymentElement.paymentAmount}}
+// }, (err, data) => {
+//     if (err) {
+//         console.log(err);
+//         return res.status(406).send({success: false, message: 'Not Successed Saved'});
+//     } else {
+//         console.log(data);
+//         return res.status(200).send({success: true, message: 'Successed Payment'});
+//     }
+// });
 
-    });
-}
-payAmount(null, null);

@@ -42,7 +42,9 @@ app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm
 app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);//done
 
 app.post('/getOrderFormByDates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
-//app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//doing
+app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
+app.post('/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
+
 app.post('/getOrderForm', isAuthenticated('Admin'), orderformController.getOrderForm);
 // app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 
