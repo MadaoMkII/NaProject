@@ -175,95 +175,48 @@ exports.updatePayment = (req, res) => {
                     message: 'Can not find Payment history!'
                 });
             }
-
             orderModel.update({
                     'checkOrderRecords._id': paymentElement.checkOrderId
                 }, {
                     $pull: {
                         'checkOrderRecords.$.paymentHistories': {'_id': {$eq: paymentElement.paymentId}}
-                    },$push: {
-                    'checkOrderRecords.$.paymentHistories': {
-                        _id: paymentElement.paymentId,
-                        paymentDate: paymentElement.paymentDate,
-                        paymentAmount: paymentElement.paymentAmount
                     }
-                }
-                }, {
-
-                }, (err, data) => {
+                }, {}, (err, data) => {
                     if (err) {
-                        console.log(err)
-                        res.status(503).send({
+                        console.log(err);
+                        return res.status(503).send({
                             success: false,
                             message: 'Error Happened , please check input data!'
                         });
                     } else {
-                        console.log(data)
-                        res.status(200).send({success: true, message: 'Successed Saved'});
+
+                        orderModel.update({
+                            'checkOrderRecords._id': paymentElement.checkOrderId
+                        }, {
+                            $push: {
+                                'checkOrderRecords.$.paymentHistories': {
+                                    _id: paymentElement.paymentId,
+                                    paymentDate: paymentElement.paymentDate,
+                                    paymentAmount: paymentElement.paymentAmount
+                                }
+                            }
+                        }, (err, data) => {
+                            if (err) {
+                                console.log(err);
+                                return res.status(503).send({
+                                    success: false,
+                                    message: 'Error Happened , please check input data!'
+                                });
+                            } else {
+                                console.log(data);
+                                return res.status(200).send({success: true, message: 'Successed Saved'});
+                            }
+                        });
                     }
                 }
             );
-
-
-            let newCheckOrderRecords = [];
-
-            for (let checkOrder of data.checkOrderRecords) {
-
-                if (checkOrder._id.toString() == paymentElement.checkOrderId) {
-
-                    for (let payh of checkOrder.paymentHistories) {
-
-                        if (payh._id.toString() === paymentElement.paymentId) {
-                            newCheckOrderRecords.push({
-                                paymentDate: paymentElement.paymentDate,
-                                paymentAmount: paymentElement.paymentAmount,
-                                _id: payh._id
-                            });
-
-                        } else {
-                            newCheckOrderRecords.push(payh);
-                        }
-                    }
-                }
-            }
-            console.log(newCheckOrderRecords);
-            if (newCheckOrderRecords[0].paymentAmount) {
-
-            }
-
-
         }
     );
 };
 
-//
-
-//
-// orderModel.findOneAndUpdate({
-//         'checkOrderRecords._id': '5a1c934cb769882638bc0d4c'
-//     }, {
-//         $set: {
-//             'checkOrderRecords.0.adStatus': "1150"
-//         }
-//     }, (err, data) => {
-//
-//         console.log(err);
-//         console.log(data);
-//     }
-// );
-//orderModel.findOne({'checkOrderRecords': {$elemMatch: {_id: '5a1c934cb769882638bc0d4d'}}}, (err, data) => {
-
-
-// orderModel.findOneAndUpdate({_id: req.body['checkOrderId']}, {
-//     $push: {'paymentHistory': {'paymentDate': paymentElement.paymentDate,
-//         'paymentAmount': paymentElement.paymentAmount}}
-// }, (err, data) => {
-//     if (err) {
-//         console.log(err);
-//         return res.status(406).send({success: false, message: 'Not Successed Saved'});
-//     } else {
-//         console.log(data);
-//         return res.status(200).send({success: true, message: 'Successed Payment'});
-//     }
-// });
 

@@ -41,7 +41,9 @@ const orderFormSchema = new mongoose.Schema({
 
 orderFormSchema.plugin(autoIncrement.plugin, {model: 'orderForm', field: 'orderId'});
 const orderFormModel = mongoose.model('orderForm', orderFormSchema);
-
+orderFormSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
+    return this.collection.findAndModify(query, sort, doc, options, callback);
+};
 module.exports.orderFormModel = orderFormModel;
 module.exports.checkFormModel = checkFormModel;
 module.exports.paymentHistoryModel = paymentHistoryModel;
