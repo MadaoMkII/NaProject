@@ -1,11 +1,11 @@
-var passport = require('passport');
+let passport = require('passport');
 
 
 exports.loginUser = function (req, res, next) {
     passport.authenticate('local', function (err, user, info) {
         if (req.user) req.logout();
         if (err) {
-
+            console.log(err);
             return res.status(401).json({success: false, message: 'Login faild'});// will generate a 500 error
         }
         // Generate a JSON response reflecting authentication status
@@ -19,7 +19,7 @@ exports.loginUser = function (req, res, next) {
             return res.status(200).json({success: true, message: 'Authentication succeeded'});
         });
     })(req, res, next);
-}
+};
 //tool function translates Privilege to amount
 let getPrivilege = function (privilegeName) {
     let privilege = 0;
@@ -38,7 +38,7 @@ let getPrivilege = function (privilegeName) {
 
     }
     return privilege;
-}
+};
 //check if user has been login though passport
 //check if the requst has enough privilege for a certain API
 exports.isAuthenticated = function (privilegeName) {
@@ -59,4 +59,4 @@ exports.isAuthenticated = function (privilegeName) {
 
 
     }
-}
+};

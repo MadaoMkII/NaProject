@@ -1,4 +1,4 @@
-const config = require('../config/develop')
+const config = require('../config/develop');
 const agentModel = require('../modules/agent');
 
 exports.addAgent = function (req, res) {
@@ -13,8 +13,7 @@ exports.addAgent = function (req, res) {
         'receiverate': req.body.receiverate,
         'publishrate': req.body.publishrate
     };
-    let agentEntity = new agentModel(userInfo);
-    agentEntity.save(userInfo, (err) => {
+    new agentModel(userInfo).save(userInfo, (err) => {
         if (err) {
             if (err.toString().includes('duplicate')) {
                 return res.status(406).json({
@@ -29,7 +28,7 @@ exports.addAgent = function (req, res) {
     });
 
 
-}
+};
 
 
 // exports.addAdmin = function (req, res) {

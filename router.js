@@ -47,11 +47,6 @@ app.post('/updatepayorder', isAuthenticated('Admin'), orderformController.update
 
 app.post('/getOrderForm', isAuthenticated('Admin'), orderformController.getOrderForm);
 // app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
-
-app.get('/abc', isAuthenticated('Super_Admin'), function (req, res) {
-    res.json({username: 'unknow'});
-});
-
 app.post('/login', loginUser);
 
 

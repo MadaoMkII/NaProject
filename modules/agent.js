@@ -1,5 +1,5 @@
-let mongoose = require('mongoose');
-let db = require('../db/db');
+const mongoose = require('mongoose');
+const db = require('../db/db');
 
 let agentSchema = new mongoose.Schema({
     username: {
@@ -34,30 +34,25 @@ agentSchema.statics.findByPositionName = function (stationname, callback) {
         return callback(err, agents);
 
     })
-}
+};
 
 
-agentSchema.statics.addNewAgent = function (userinfo) {
+agentSchema.statics.addNewAgent = (userinfo) => {
     let agentEntity = new agentModel(userinfo);
-    agentEntity.save(function (err, data) {
+    agentEntity.save((err) => {
 
         if (err) {
             console.log(err);
             return err;
 
         }
-    })
+    });
 
 
-    agentSchema.statics.findByUserName = function (username, callback) {
+    agentSchema.statics.findByUsername = (username, callback) => {
 
-        agentModel.find({'username': username}, 'name occupation', (err, agents) => {
 
-            if (err) console.log(err + '!');
-            return callback(err, agents);
-
-        })
-    }
+    };
 
     agentSchema.statics.getAllAgent = function (callback) {
         agentModel.find({'role': {$eq: 'Agent'}}, 'username country role stationname receiverate publishrate createtimestamp',
@@ -66,7 +61,7 @@ agentSchema.statics.addNewAgent = function (userinfo) {
                 if (agents) return callback(null, agents);
                 return callback(err, {'Massage': 'Can not find anything'});
             })
-    }
+    };
 
     agentSchema.statics.isDuplicationName = function (data, callback) {
 
@@ -79,7 +74,8 @@ agentSchema.statics.addNewAgent = function (userinfo) {
         })
 
     }
-}
+};
 let agentModel = mongoose.model('Agent', agentSchema);
-module.exports = exports = mongoose.model('Agent');
+
+module.exports = exports = agentModel;
 

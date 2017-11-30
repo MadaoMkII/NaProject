@@ -3,13 +3,28 @@ const orderModel = require('../modules/orderForm').orderFormModel;
 
 
 exports.getOrderForm = (req, res) => {
-    orderModel.find({}, {_id: 0, __v: 0, updated_at: 0, created_at: 0}, (err, data) => {
+    orderModel.find({}, {__v: 0, updated_at: 0, created_at: 0}, (err) => {
             if (err) {
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                return res.status(200).send({success: true, message: 'Successed Saved'});
             }
-            return res.status(200).send({success: true, orderForm: data});
         }
     );
+};
+exports.getOrderFormByCheckId = (req, res) => {//未检查
+    orderModel.find({'checkOrderRecords._id': {$eq: req.body.checkOrderId}}, {
+        __v: 0,
+        updated_at: 0,
+        created_at: 0
+    }, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.status(406).send({success: false, message: 'Not Successed Saved'});
+        } else {
+            return res.status(200).send({success: true, orderForm: data});
+        }
+    });
 };
 exports.getOrderFormByDates = (req, res) => {
 
@@ -22,8 +37,9 @@ exports.getOrderFormByDates = (req, res) => {
             if (err) {
                 console.log(err);
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                return res.status(200).send({success: true, orderForm: data});
             }
-            return res.status(200).send({success: true, orderForm: data});
         }
     );
 };
@@ -122,7 +138,6 @@ exports.addOrderForm = (req, res) => {
         }
     }
 };
-
 exports.payAmount = (req, res) => {
 
     let paymentElement = {};
@@ -153,7 +168,6 @@ exports.payAmount = (req, res) => {
         }
     );
 };
-
 exports.updatePayment = (req, res) => {
 //拿到之前的直接push
     let paymentElement = {};
@@ -162,26 +176,31 @@ exports.updatePayment = (req, res) => {
     paymentElement.paymentDate = req.body['payDay'];
     paymentElement.paymentAmount = req.body['paymentAmount'];
 
-    orderModel.findOne({'checkOrderRecords._id': paymentElement.checkOrderId}, (err, data) => {
+    orderModel.update({
+            'checkOrderRecords._id': paymentElement.checkOrderId
+        }, {
+            $pull: {
+                'checkOrderRecords.$.paymentHistories': {'_id': {$eq: paymentElement.paymentId}}
+            }
+        }, (err) => {
             if (err) {
-                res.status(503).send({
+                console.log(err);
+                return res.status(503).send({
                     success: false,
                     message: 'Error Happened , please check input data!'
                 });
-            }
-            if (!data) {
-                res.status(503).send({
-                    success: false,
-                    message: 'Can not find Payment history!'
-                });
-            }
-            orderModel.update({
+            } else {
+                orderModel.update({
                     'checkOrderRecords._id': paymentElement.checkOrderId
                 }, {
-                    $pull: {
-                        'checkOrderRecords.$.paymentHistories': {'_id': {$eq: paymentElement.paymentId}}
+                    $push: {
+                        'checkOrderRecords.$.paymentHistories': {
+                            _id: paymentElement.paymentId,
+                            paymentDate: paymentElement.paymentDate,
+                            paymentAmount: paymentElement.paymentAmount
+                        }
                     }
-                }, {}, (err, data) => {
+                }, (err, data) => {
                     if (err) {
                         console.log(err);
                         return res.status(503).send({
@@ -189,34 +208,38 @@ exports.updatePayment = (req, res) => {
                             message: 'Error Happened , please check input data!'
                         });
                     } else {
-
-                        orderModel.update({
-                            'checkOrderRecords._id': paymentElement.checkOrderId
-                        }, {
-                            $push: {
-                                'checkOrderRecords.$.paymentHistories': {
-                                    _id: paymentElement.paymentId,
-                                    paymentDate: paymentElement.paymentDate,
-                                    paymentAmount: paymentElement.paymentAmount
-                                }
-                            }
-                        }, (err, data) => {
-                            if (err) {
-                                console.log(err);
-                                return res.status(503).send({
-                                    success: false,
-                                    message: 'Error Happened , please check input data!'
-                                });
-                            } else {
-                                console.log(data);
-                                return res.status(200).send({success: true, message: 'Successed Saved'});
-                            }
-                        });
+                        console.log(data);
+                        return res.status(200).send({success: true, message: 'Successed Saved'});
                     }
-                }
-            );
+                });
+            }
         }
     );
 };
+exports.deletePayment = (req, res) => {
+
+    let paymentElement = {};
+    paymentElement.paymentId = req.body['paymentId'];
+
+    orderModel.update({
+        'checkOrderRecords._id': paymentElement.checkOrderId
+    }, {
+        $pull: {
+            'checkOrderRecords.$.paymentHistories': {'_id': {$eq: paymentElement.paymentId}}
+        }
+    }, (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(503).send({
+                success: false,
+                message: 'Error Happened , please check input data!'
+            });
+        } else {
+            console.log(data);
+            return res.status(200).send({success: true, message: 'Successed Deleted'});
+        }
+    });
+};
+
 
 
