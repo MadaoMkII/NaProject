@@ -3,11 +3,11 @@ const orderModel = require('../modules/orderForm').orderFormModel;
 
 
 exports.getOrderForm = (req, res) => {
-    orderModel.find({}, {__v: 0, updated_at: 0, created_at: 0}, (err) => {
+    orderModel.find({}, {__v: 0, updated_at: 0, created_at: 0}, (err, data) => {
             if (err) {
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
-                return res.status(200).send({success: true, message: 'Successed Saved'});
+                return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
             }
         }
     );
@@ -76,10 +76,14 @@ exports.addOrderForm = (req, res) => {
     }
     {
         if (!(null !== publishPositions && Array.isArray(publishPositions))) {
-        } else {
 
+
+        } else {
             angentModel.findByPositionName(publishPositions, (error, result) => {
-                if (error) return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
+                if (error) {
+                    console.log(error);
+                    return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
+                }
                 result.forEach((element) => {
                     let shouldPay, checkOrder;
                     if (flag || element.stationname !== orderInformation.receivePosition) {
@@ -169,7 +173,7 @@ exports.payAmount = (req, res) => {
     );
 };
 exports.updatePayment = (req, res) => {
-//拿到之前的直接push
+
     let paymentElement = {};
     paymentElement.checkOrderId = req.body['checkOrderId'];
     paymentElement.paymentId = req.body['paymentId'];

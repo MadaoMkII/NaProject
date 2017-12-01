@@ -2,7 +2,7 @@ let passport = require('passport');
 
 
 exports.loginUser = function (req, res, next) {
-    passport.authenticate('local', function (err, user, info) {
+    passport.authenticate('local', function (err, user) {
         if (req.user) req.logout();
         if (err) {
             console.log(err);
@@ -10,13 +10,16 @@ exports.loginUser = function (req, res, next) {
         }
         // Generate a JSON response reflecting authentication status
         if (!user) {
-            return res.status(401).json({success: false, message: 'Authentication faild, need login first'});
+            return res.status(401).json({
+                success: false, message:
+                    'Authentication faild, please check username and password'
+            });
         }
         req.login(user, function (err) {
             if (err) {
                 return next(err);
             }
-            return res.status(200).json({success: true, message: 'Authentication succeeded'});
+            return res.status(200).json({success: true, role: user.role, message: 'Authentication succeeded'});
         });
     })(req, res, next);
 };

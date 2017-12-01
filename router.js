@@ -1,17 +1,17 @@
-var express = require('express');
-var passport = require('passport');
+const express = require('express');
+const passport = require('passport');
 const userController = require('./controllers/userController');
 const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
 
-var bodyParser = require('body-parser');
-var session = require('express-session');
+const bodyParser = require('body-parser');
+const session = require('express-session');
 
-var json_body_parser = bodyParser.json();
-var urlencoded_body_parser = bodyParser.urlencoded({extended: true});
+const json_body_parser = bodyParser.json();
+const urlencoded_body_parser = bodyParser.urlencoded({extended: true});
 const passportService = require('./config/passport');
-var app = express();
+let app = express();
 app.use(json_body_parser);
 app.use(urlencoded_body_parser);
 app.use(session({
@@ -38,17 +38,21 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
         '  Your username is : ' + req.user.username
     });
 });
-app.post('/addOrder', isAuthenticated('Admin'), orderformController.addOrderForm);//DONE
-app.post('/addAgent', isAuthenticated('Admin'), userController.addAgent);//done
 
-app.post('/getOrderFormByDates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
+app.post('/addagent', isAuthenticated('Admin'), userController.addAgent);//done
+
+app.post('/addorderform', isAuthenticated('Admin'), orderformController.addOrderForm);//DONE
+app.get('/getorderform', isAuthenticated('Admin'), orderformController.getOrderForm);
+app.post('/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
+app.post('/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
+
 app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
 app.post('/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
+app.post('/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
 
-app.post('/getOrderForm', isAuthenticated('Admin'), orderformController.getOrderForm);
 // app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 app.post('/login', loginUser);
 
 
 app.listen(3000);
-console.log("Begin");
+console.log("Begin Server");

@@ -11,7 +11,6 @@ passport.serializeUser(function (user, callback) {
 let foundUser = {};
 passport.deserializeUser(function (username, callback) {
         angentModel.findOne({'username': username}, function (err, user) {
-            console.log(user)
             callback(err, user);
         });
     }
