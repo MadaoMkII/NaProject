@@ -57,90 +57,46 @@ exports.getOrderFormByDates = (req, res) => {
 
 
 exports.updateOrderForm = (req, res) => {
-    if (req.body['rebuiltcheckform']) {
-        let publishPositionsStringArray = req.body.publishPositions;
-        angentModel.findByPositionName(publishPositionsStringArray, (error, result) => {
-            if (error) {
-                console.log(error);
-                return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
+    if (req.body['rebuilt']) {
+        orderModel.remove({_id: req.body['_orderformid']}, (err) => {
+            if (err) {
+                console.log(err);
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                addOrderForm(req, res);
             }
-            result.forEach((element) => {
-                let shouldPay, checkOrder;
-                if (includeFlag || element.stationname !== orderInformation.receivePosition.stationname) {
-                    let everyPublishStation = publishPositionsMap.get(element.stationname);
-
-                    shouldPay = Math.round(everyPublishStation.amount * element.publishrate * 100) / 100;
-                    checkOrder = {
-                        job: 'publish',
-                        adName: orderInformation.adName,
-                        adBeginDate: orderInformation.adBeginDate,
-                        adEndDate: orderInformation.adEndDate,
-                        receiveStation: orderInformation.receivePosition.stationname,
-                        shouldPayStation: element.stationname,
-                        customerWechat: orderInformation.customerWechat,
-                        orderAmont: shouldPay,
-                        currency: everyPublishStation.currency,
-                        remark: orderInformation.remark
-                    };
-
-                    orderForm.checkOrderRecords.push(checkOrder);
-                }
-                if (element.stationname === orderInformation.receivePosition.stationname) {
-                    let shouldPay = Math.round(orderInformation.orderTotalAmont//comes from user input
-                        * element.receiverate * 100) / 100;
-
-                    let checkOrder = {
-                        job: 'receive',
-                        adName: orderInformation.adName,
-                        adBeginDate: orderInformation.adBeginDate,
-                        adEndDate: orderInformation.adEndDate,
-                        currency: orderInformation.receivePosition.currency,
-                        receiveStation: orderInformation.receivePosition.stationname,
-                        shouldPayStation: orderInformation.receivePosition.stationname,
-                        customerWechat: orderInformation.customerWechat,
-                        orderAmont: shouldPay,
-                        remark: orderInformation.remark
-                    };
-                    orderForm.checkOrderRecords.push(checkOrder);
-                }
-            });
-            orderForm.save((err, data) => {
-                if (err) {
-                    res.status(503).send({
-                        success: false,
-                        message: 'Error Happened , please check input data!'
-                    });
-                } else {
-                    console.log(data);
-                    res.status(200).send({success: true, message: 'Successed Saved'});
-                }
-            });
-
         });
-
-
-    }
-    //{{orderFormField1:xxx,orderFormField2:xxx,orderFormField3:xxx,......, rebuiltCheck:boolean}}
-    orderModel.findAndModify({_id: req.body['orderId']}, {
-            $set: {
-                adType: req.body.adType, adName: req.body.adName,
-                adBeginDate: req.body.adBeginDate, adEndDate: req.body.adEndDate,
-                publishType: req.body.publishType, customerName: req.body.customerName,
-                paymentMethod: req.body.paymentMethod, customerWechat: req.body.customerWechat,
-                customerPhone: req.body.customerPhone, remark: req.body.remark,
-                receivePosition: req.body.receivePosition, publishPositions: req.body.publishPositions,
-                orderTotalAmont: req.body.orderTotalAmont
+    } else {
+        orderModel.update({_id: req.body['_orderformid']}, {
+                $set: {
+                    adStatus: req.body.adStatus,
+                    adType: req.body.adType,
+                    adName: req.body.adName,
+                    adBeginDate: req.body.adBeginDate,
+                    adEndDate: req.body.adEndDate,
+                    publishType: req.body.publishType,
+                    customerName: req.body.customerName,
+                    paymentMethod: req.body.paymentMethod,
+                    customerWechat: req.body.customerWechat,
+                    customerPhone: req.body.customerPhone,
+                    remark: req.body.remark,
+                    orderTotalAmont: req.body.orderTotalAmont
+                }
+            },
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(406).send({success: false, message: 'Not Successed Saved'});
+                } else {
+                    console.log(result);
+                    return res.status(200).send({success: true, message: 'Successed Updated'});
+                }
             }
-        },
-        (error, result) => {
-
-        }
-    );
-
+        );
+    }
 };
-let update
 
-exports.addOrderForm = (req, res) => {
+let addOrderForm = (req, res) => {
 
     let orderInformation = req.body;
     let includeFlag = false;
@@ -178,6 +134,8 @@ exports.addOrderForm = (req, res) => {
         } else {
             orderForm.adStatus = orderInformation.adStatus;
         }
+
+        orderForm._id = req.body['_orderformid'];
         orderForm.adName = orderInformation.adName;
         orderForm.adType = orderInformation.adType;
         orderForm.adBeginDate = orderInformation.adBeginDate;
@@ -243,8 +201,10 @@ exports.addOrderForm = (req, res) => {
                         orderForm.checkOrderRecords.push(checkOrder);
                     }
                 });
+
                 orderForm.save((err, data) => {
                     if (err) {
+                        console.log(err);
                         res.status(503).send({
                             success: false,
                             message: 'Error Happened , please check input data!'
@@ -363,4 +323,4 @@ exports.deletePayment = (req, res) => {
 };
 
 
-
+exports.addOrderForm = addOrderForm;

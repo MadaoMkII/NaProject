@@ -45,7 +45,7 @@ app.post('/addorderform', isAuthenticated('Admin'), orderformController.addOrder
 app.get('/getorderform', isAuthenticated('Admin'), orderformController.getOrderForm);
 app.post('/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
 app.post('/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
-
+app.post('/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
 app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
 app.post('/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
 app.post('/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
