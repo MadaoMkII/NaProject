@@ -1,5 +1,16 @@
 const angentModel = require('../modules/agent');
 const orderModel = require('../modules/orderForm').orderFormModel;
+//S1 接的广告
+// Total S1+S2+S3 = 600
+//
+// receiveposition S1= total * 20%
+//
+//     Publish position s1, s2, s3
+// agent 加入币种
+// s1pub =(S1 :250) * 0.5
+// s2pub =(S2 :200) * 0.5
+// s3pub =(S3 :150) * 0.5
+// S1 :250: currency
 
 
 exports.getOrderForm = (req, res) => {
@@ -12,7 +23,7 @@ exports.getOrderForm = (req, res) => {
         }
     );
 };
-exports.getOrderFormByCheckId = (req, res) => {//未检查
+exports.getOrderFormByCheckId = (req, res) => {//DOne
     orderModel.find({'checkOrderRecords._id': {$eq: req.body.checkOrderId}}, {
         __v: 0,
         updated_at: 0,
@@ -43,21 +54,130 @@ exports.getOrderFormByDates = (req, res) => {
         }
     );
 };
+
+
+exports.updateOrderForm = (req, res) => {
+    if (req.body['rebuiltcheckform']) {
+        let publishPositionsStringArray = req.body.publishPositions;
+        angentModel.findByPositionName(publishPositionsStringArray, (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
+            }
+            result.forEach((element) => {
+                let shouldPay, checkOrder;
+                if (includeFlag || element.stationname !== orderInformation.receivePosition.stationname) {
+                    let everyPublishStation = publishPositionsMap.get(element.stationname);
+
+                    shouldPay = Math.round(everyPublishStation.amount * element.publishrate * 100) / 100;
+                    checkOrder = {
+                        job: 'publish',
+                        adName: orderInformation.adName,
+                        adBeginDate: orderInformation.adBeginDate,
+                        adEndDate: orderInformation.adEndDate,
+                        receiveStation: orderInformation.receivePosition.stationname,
+                        shouldPayStation: element.stationname,
+                        customerWechat: orderInformation.customerWechat,
+                        orderAmont: shouldPay,
+                        currency: everyPublishStation.currency,
+                        remark: orderInformation.remark
+                    };
+
+                    orderForm.checkOrderRecords.push(checkOrder);
+                }
+                if (element.stationname === orderInformation.receivePosition.stationname) {
+                    let shouldPay = Math.round(orderInformation.orderTotalAmont//comes from user input
+                        * element.receiverate * 100) / 100;
+
+                    let checkOrder = {
+                        job: 'receive',
+                        adName: orderInformation.adName,
+                        adBeginDate: orderInformation.adBeginDate,
+                        adEndDate: orderInformation.adEndDate,
+                        currency: orderInformation.receivePosition.currency,
+                        receiveStation: orderInformation.receivePosition.stationname,
+                        shouldPayStation: orderInformation.receivePosition.stationname,
+                        customerWechat: orderInformation.customerWechat,
+                        orderAmont: shouldPay,
+                        remark: orderInformation.remark
+                    };
+                    orderForm.checkOrderRecords.push(checkOrder);
+                }
+            });
+            orderForm.save((err, data) => {
+                if (err) {
+                    res.status(503).send({
+                        success: false,
+                        message: 'Error Happened , please check input data!'
+                    });
+                } else {
+                    console.log(data);
+                    res.status(200).send({success: true, message: 'Successed Saved'});
+                }
+            });
+
+        });
+
+
+    }
+    //{{orderFormField1:xxx,orderFormField2:xxx,orderFormField3:xxx,......, rebuiltCheck:boolean}}
+    orderModel.findAndModify({_id: req.body['orderId']}, {
+            $set: {
+                adType: req.body.adType, adName: req.body.adName,
+                adBeginDate: req.body.adBeginDate, adEndDate: req.body.adEndDate,
+                publishType: req.body.publishType, customerName: req.body.customerName,
+                paymentMethod: req.body.paymentMethod, customerWechat: req.body.customerWechat,
+                customerPhone: req.body.customerPhone, remark: req.body.remark,
+                receivePosition: req.body.receivePosition, publishPositions: req.body.publishPositions,
+                orderTotalAmont: req.body.orderTotalAmont
+            }
+        },
+        (error, result) => {
+
+        }
+    );
+
+};
+let update
+
 exports.addOrderForm = (req, res) => {
 
     let orderInformation = req.body;
-    let flag = false;
+    let includeFlag = false;
     let publishPositions = orderInformation.publishPositions;
 
-    if (publishPositions.includes(orderInformation.receivePosition)) {
-        flag = true;
-    } else {
-        publishPositions.push(orderInformation.receivePosition);
-    }
-    let tempNumber = publishPositions.length;
+    let publishPositionsMap = new Map();
+    let publishPositionsStringArray = [];
+    orderInformation.publishPositions.forEach((position) => {
+        publishPositionsMap.set(position.stationname, {amount: position.amount, currency: position.currency});
+        publishPositionsStringArray.push(position.stationname);
+
+    });
     let orderForm = new orderModel();
+    if (publishPositionsStringArray.includes(orderInformation.receivePosition.stationname)) {
+        includeFlag = true;
+    }
+
+    console.log(publishPositionsMap);
+
+//接单总价*20
+    //发单 总价/发单人数 * 发单比例S1 接的广告
+    // Total S1+S2+S3 = 600
+    //
+    // receiveposition S1= total * 20%
+    //
+    //     Publish position s1, s2, s3
+    //
+    // s1pub =(S1 :250) * 0.5
+    // s2pub =(S2 :200) * 0.5
+    // s3pub =(S3 :150) * 0.5
 
     {
+        if (!orderInformation.adStatus) {
+            orderForm.adStatus = 'Ongoing';
+        } else {
+            orderForm.adStatus = orderInformation.adStatus;
+        }
         orderForm.adName = orderInformation.adName;
         orderForm.adType = orderInformation.adType;
         orderForm.adBeginDate = orderInformation.adBeginDate;
@@ -66,7 +186,7 @@ exports.addOrderForm = (req, res) => {
         orderForm.orderTotalAmont = orderInformation.orderTotalAmont;
         orderForm.customerName = orderInformation.customerName;
         orderForm.paymentMethod = orderInformation.paymentAmount;
-        orderForm.receivePosition = orderInformation.receivePosition;
+        orderForm.receivePosition = orderInformation.receivePosition.stationname;
         orderForm.publishPositions = orderInformation.publishPositions;
         orderForm.customerWechat = orderInformation.customerWechat;
         orderForm.customerPhone = orderInformation.customerPhone;
@@ -76,54 +196,51 @@ exports.addOrderForm = (req, res) => {
     }
     {
         if (!(null !== publishPositions && Array.isArray(publishPositions))) {
-
-
+            return res.status(503).send({success: false, message: 'publishPositions has promblems'});
         } else {
-            angentModel.findByPositionName(publishPositions, (error, result) => {
+            angentModel.findByPositionName(publishPositionsStringArray, (error, result) => {
                 if (error) {
                     console.log(error);
                     return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
                 }
                 result.forEach((element) => {
                     let shouldPay, checkOrder;
-                    if (flag || element.stationname !== orderInformation.receivePosition) {
-                        shouldPay = Math.round(orderInformation.orderTotalAmont
-                            / tempNumber * element.publishrate * 100) / 100;
+                    if (includeFlag || element.stationname !== orderInformation.receivePosition.stationname) {
+                        let everyPublishStation = publishPositionsMap.get(element.stationname);
 
+                        shouldPay = Math.round(everyPublishStation.amount * element.publishrate * 100) / 100;
                         checkOrder = {
-                            adStatus: 'Ongoing',
                             job: 'publish',
                             adName: orderInformation.adName,
                             adBeginDate: orderInformation.adBeginDate,
                             adEndDate: orderInformation.adEndDate,
-                            receiveStation: orderInformation.receivePosition,
+                            receiveStation: orderInformation.receivePosition.stationname,
                             shouldPayStation: element.stationname,
                             customerWechat: orderInformation.customerWechat,
                             orderAmont: shouldPay,
+                            currency: everyPublishStation.currency,
                             remark: orderInformation.remark
                         };
 
                         orderForm.checkOrderRecords.push(checkOrder);
                     }
-                    if (element.stationname === orderInformation.receivePosition) {
-                        let shouldPay = Math.round(orderInformation.orderTotalAmont
+                    if (element.stationname === orderInformation.receivePosition.stationname) {
+                        let shouldPay = Math.round(orderInformation.orderTotalAmont//comes from user input
                             * element.receiverate * 100) / 100;
 
                         let checkOrder = {
-                            adStatus: 'Ongoing',
                             job: 'receive',
                             adName: orderInformation.adName,
                             adBeginDate: orderInformation.adBeginDate,
                             adEndDate: orderInformation.adEndDate,
-                            receiveStation: orderInformation.receivePosition,
-                            shouldPayStation: orderInformation.receivePosition,
+                            currency: orderInformation.receivePosition.currency,
+                            receiveStation: orderInformation.receivePosition.stationname,
+                            shouldPayStation: orderInformation.receivePosition.stationname,
                             customerWechat: orderInformation.customerWechat,
                             orderAmont: shouldPay,
                             remark: orderInformation.remark
                         };
-
                         orderForm.checkOrderRecords.push(checkOrder);
-
                     }
                 });
                 orderForm.save((err, data) => {
@@ -138,7 +255,7 @@ exports.addOrderForm = (req, res) => {
                     }
                 });
 
-            })
+            });
         }
     }
 };

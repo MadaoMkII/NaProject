@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 const db = require('../db/db');
 let autoIncrement = require('mongoose-auto-increment');
 
+const publisStation = new mongoose.Schema(
+    {
+        stationname: String,
+        amount: Number,
+        currency: String
+    }
+);
+
 const paymentHistory = new mongoose.Schema({
         paymentDate: Date,
         paymentAmount: Number
@@ -9,11 +17,12 @@ const paymentHistory = new mongoose.Schema({
 );
 const paymentHistoryModel = mongoose.model('paymentHistory', paymentHistory);
 const checkFormSchema = new mongoose.Schema({
-    adStatus: String, adName: String, adBeginDate: Date, adEndDate: Date,
+    adName: String, adBeginDate: Date, adEndDate: Date,
     receiveStation: {required: true, type: String}, shouldPayStation: {required: true, type: String},
     customerWechat: String,
     paymentHistories: [paymentHistory],
     job: String,
+    currency: String,
     orderAmont: {
         type: Number,
         required: true
@@ -21,9 +30,9 @@ const checkFormSchema = new mongoose.Schema({
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});
 const checkFormModel = mongoose.model('checkOrderForm', checkFormSchema);
 const orderFormSchema = new mongoose.Schema({
-
     adName: String,
     adType: String,
+    adStatus: String,
     adBeginDate: Date,
     adEndDate: Date,
     publishType: String,
@@ -31,7 +40,7 @@ const orderFormSchema = new mongoose.Schema({
     customerName: String,
     paymentMethod: String,
     receivePosition: {required: true, type: String},
-    publishPositions: [String],
+    publishPositions: [publisStation],
     customerWechat: String,
     customerPhone: String,
     remark: String,
