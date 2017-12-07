@@ -10,18 +10,25 @@ mongoose.Promise = global.Promise;
 
 db.once('open', () => {
     logger.info('Connected with DB');
-    logger.trace(db);
+    logger.trace('Host:' + db.host
+        + ' port: ' + db.host, ' user: '
+        + db.user);
     console.log('Connected with DB');
-})
+});
 
-db.on('error', function (error) {
+db.on('error', (error) => {
+    logger.error(error);
+    logger.trace('Host:' + db.host
+        + ' port: ' + db.host, ' user: '
+        + db.user + ' pass: ' + db.pass +
+        ' name: ' + db.name);
     console.error('Error in MongoDb connection: ' + error);
     mongoose.disconnect();
 });
 
-db.on('close', function () {
-    console.log('数据库断开，重新连接数据库');
+db.on('close', (info) => {
+    console.log('Disconnected');
+    logger.warn('Db has dissconnected: ' + info);
     mongoose.connect(config.url, {server: {auto_reconnect: true}});
 });
 
-// 3、通过`mongoose.model`定义模型(model)

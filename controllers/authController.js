@@ -1,15 +1,23 @@
-let passport = require('passport');
+const passport = require('passport');
+const logger = require('../logging/logger');
 
 
 exports.loginUser = function (req, res, next) {
     passport.authenticate('local', function (err, user) {
-        if (req.user) req.logout();
+        if (req.user) {
+            logger.debug(req.user + ' has been logout for new loggin');
+            req.logout();
+        }
         if (err) {
-            console.log(err);
+            logger.trace(req.body);
+            logger.error('Error location : Class: authController, function: loginUser. ' + err);
+            logger.error('Response code:401, message: Login faild');
             return res.status(401).json({success: false, message: 'Login faild'});// will generate a 500 error
         }
         // Generate a JSON response reflecting authentication status
         if (!user) {
+            logger.error('Error location : Class: authController, function: loginUser. ' + err);
+            logger.error('Response code:401, message: Authentication faild, please check username and password');
             return res.status(401).json({
                 success: false, message:
                     'Authentication faild, please check username and password'
@@ -17,6 +25,7 @@ exports.loginUser = function (req, res, next) {
         }
         req.login(user, function (err) {
             if (err) {
+                logger.error('Error location : Class: authController, function: loginUser. ' + err);
                 return next(err);
             }
             return res.status(200).json({success: true, role: user.role, message: 'Authentication succeeded'});

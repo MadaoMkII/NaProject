@@ -1,5 +1,6 @@
 const angentModel = require('../modules/agent');
 const orderModel = require('../modules/orderForm').orderFormModel;
+const logger = require('../logging/logger');
 //S1 接的广告
 // Total S1+S2+S3 = 600
 //
@@ -13,9 +14,48 @@ const orderModel = require('../modules/orderForm').orderFormModel;
 // S1 :250: currency
 
 
+exports.getMyPublishOrderform = (req, res) => {
+    console.log(req.user.stationname)
+    orderModel.find({'publishPositions.stationname': {$eq: req.user.stationname}}, {
+            __v: 0
+        }, (err, data) => {
+            if (err) {
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                console.log(data);
+                return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
+            }
+        }
+    );
+};
+
+exports.getMyreceiveOrderform = (req, res) => {
+
+    orderModel.find({'receivePosition': {$eq: req.user.stationname}}, {
+            __v: 0
+        }, (err, data) => {
+            if (err) {
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                console.log(data);
+                return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
+            }
+        }
+    );
+};
+
 exports.getOrderForm = (req, res) => {
     orderModel.find({}, {__v: 0, updated_at: 0, created_at: 0}, (err, data) => {
             if (err) {
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
                 return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
@@ -25,13 +65,17 @@ exports.getOrderForm = (req, res) => {
 };
 
 exports.getOrderFormByCheckId = (req, res) => {//Done
-    orderModel.find({'checkOrderRecords._id': {$eq: req.body.checkOrderId}}, {
+
+    let id = req.query._id;
+    orderModel.find({'checkOrderRecords._id': {$eq: id}}, {
         __v: 0,
         updated_at: 0,
         created_at: 0
     }, (err, data) => {
         if (err) {
-            console.log(err);
+            logger.info(req.body);
+            logger.error('Error location : Class: orderformController, function: getOrderFormByCheckId. ' + err);
+            logger.error('Response code:406, message: Not Successed Saved');
             return res.status(406).send({success: false, message: 'Not Successed Saved'});
         } else {
             return res.status(200).send({success: true, orderForm: data});
@@ -41,13 +85,14 @@ exports.getOrderFormByCheckId = (req, res) => {//Done
 exports.getOrderFormByDates = (req, res) => {
 
     orderModel.find({created_at: {$lt: new Date(req.body['beforeDate']), $gt: new Date(req.body['afterDate'])}}, {
-            _id: 0,
             __v: 0,
             updated_at: 0,
             created_at: 0
         }, (err, data) => {
             if (err) {
-                console.log(err);
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: getOrderFormByDates. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
                 return res.status(200).send({success: true, orderForm: data});
@@ -59,7 +104,9 @@ exports.updateOrderForm = (req, res) => {
     if (req.body['rebuilt']) {
         orderModel.remove({_id: req.body['_orderformid']}, (err) => {
             if (err) {
-                console.log(err);
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: updateOrderForm. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
                 addOrderForm(req, res);
@@ -82,12 +129,14 @@ exports.updateOrderForm = (req, res) => {
                     orderTotalAmont: req.body.orderTotalAmont
                 }
             },
-            (err, result) => {
+            (err) => {
                 if (err) {
-                    console.log(err);
+                    logger.info(req.body);
+                    logger.error('Error location : Class: orderformController, function: updateOrderForm. ' + err);
+                    logger.error('Response code:406, message: Not Successed Saved');
                     return res.status(406).send({success: false, message: 'Not Successed Saved'});
                 } else {
-                    console.log(result);
+
                     return res.status(200).send({success: true, message: 'Successed Updated'});
                 }
             }
@@ -111,8 +160,6 @@ let addOrderForm = (req, res) => {
     if (publishPositionsStringArray.includes(orderInformation.receivePosition.stationname)) {
         includeFlag = true;
     }
-
-    console.log(publishPositionsMap);
 
 //接单总价*20
     //发单 总价/发单人数 * 发单比例S1 接的广告
@@ -156,7 +203,9 @@ let addOrderForm = (req, res) => {
         } else {
             angentModel.findByPositionName(publishPositionsStringArray, (error, result) => {
                 if (error) {
-                    console.log(error);
+                    logger.info(req.body);
+                    logger.error('Error location : Class: orderformController, function: addOrderForm. ' + error);
+                    logger.error('Response code:503, message: Error happen when adding to DB');
                     return res.status(503).send({success: false, message: 'Error happen when adding to DB'});
                 }
                 result.forEach((element) => {
@@ -200,15 +249,16 @@ let addOrderForm = (req, res) => {
                     }
                 });
 
-                orderForm.save((err, data) => {
+                orderForm.save((err) => {
                     if (err) {
-                        console.log(err);
+                        logger.info(req.body);
+                        logger.error('Error location : Class: orderformController, function: addOrderForm. ' + err);
+                        logger.error('Response code:503, message: Error Happened , please check input data');
                         res.status(503).send({
                             success: false,
                             message: 'Error Happened , please check input data!'
                         });
                     } else {
-                        console.log(data);
                         res.status(200).send({success: true, message: 'Successed Saved'});
                     }
                 });
@@ -223,7 +273,6 @@ exports.payAmount = (req, res) => {
     paymentElement._id = req.body['checkOrderId'];
     paymentElement.paymentDate = req.body['payDay'];
     paymentElement.paymentAmount = req.body['paymentAmount'];
-    console.log(paymentElement);
     orderModel.update({
             'checkOrderRecords._id': paymentElement._id
         }, {
@@ -233,15 +282,16 @@ exports.payAmount = (req, res) => {
                     paymentAmount: paymentElement.paymentAmount
                 }
             }
-        }, (err, data) => {
+        }, (err) => {
             if (err) {
-                console.log(err);
+                logger.debug(req.body);
+                logger.error('Error location : Class: orderformController, function: payAmount. ' + err);
+                logger.error('Response code:503, message: Error Happened , please check input data');
                 res.status(503).send({
                     success: false,
                     message: 'Error Happened , please check input data!'
                 });
             } else {
-                console.log(data);
                 res.status(200).send({success: true, message: 'Successed Saved'});
             }
         }
@@ -263,7 +313,9 @@ exports.updatePayment = (req, res) => {
             }
         }, (err) => {
             if (err) {
-                console.log(err);
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: updatePayment. ' + err);
+                logger.error('Response code:503, message: Error Happened , please check input data');
                 return res.status(503).send({
                     success: false,
                     message: 'Error Happened , please check input data!'
@@ -279,15 +331,16 @@ exports.updatePayment = (req, res) => {
                             paymentAmount: paymentElement.paymentAmount
                         }
                     }
-                }, (err, data) => {
+                }, (err) => {
                     if (err) {
-                        console.log(err);
+                        logger.info(req.body);
+                        logger.error('Error location : Class: orderformController, function: updatePayment. ' + err);
+                        logger.error('Response code:503, message: Error Happened , please check input data');
                         return res.status(503).send({
                             success: false,
                             message: 'Error Happened , please check input data!'
                         });
                     } else {
-                        console.log(data);
                         return res.status(200).send({success: true, message: 'Successed Saved'});
                     }
                 });
@@ -308,13 +361,14 @@ exports.deletePayment = (req, res) => {
         }
     }, (err) => {
         if (err) {
-            console.log(err);
+            logger.info(req.body);
+            logger.error('Error location : Class: orderformController, function: deletePayment. ' + err);
+            logger.error('Response code:503, message: Error Happened , please check input data!');
             return res.status(503).send({
                 success: false,
                 message: 'Error Happened , please check input data!'
             });
         } else {
-            console.log(data);
             return res.status(200).send({success: true, message: 'Successed Deleted'});
         }
     });

@@ -47,9 +47,11 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
 
 app.post('/addagent', isAuthenticated('Admin'), userController.addAgent);//done
 
-app.post('/addorderform', isAuthenticated('Admin'), orderformController.addOrderForm);//DONE
-app.get('/getorderform', isAuthenticated('Admin'), orderformController.getOrderForm);
-app.post('/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
+app.post('/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
+app.get('/getorderform', isAuthenticated('Agent'), orderformController.getOrderForm);
+app.get('/getmypublishorderform', isAuthenticated('Agent'), orderformController.getMyPublishOrderform);
+app.get('/getmyreceiveorderform', isAuthenticated('Agent'), orderformController.getMyreceiveOrderform);
+app.get('/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
 app.post('/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
 app.post('/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
 app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done

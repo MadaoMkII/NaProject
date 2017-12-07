@@ -1,7 +1,9 @@
 const config = require('../config/develop');
 const agentModel = require('../modules/agent');
+const logger = require('../logging/logger');
 
-exports.addAgent = function (req, res) {
+
+exports.addAgent = (req, res) => {
 
     let result = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
     let userInfo = {
@@ -15,6 +17,10 @@ exports.addAgent = function (req, res) {
     };
     new agentModel(userInfo).save(userInfo, (err) => {
         if (err) {
+            logger.info(req.body);
+            logger.error('Error location : Class: userController, function: addAgent. ' + err);
+            logger.error('Response code:503, message: Error Happened , please check input data');
+
             if (err.toString().includes('duplicate')) {
                 return res.status(406).json({
                     success: false,
