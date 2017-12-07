@@ -15,7 +15,7 @@ const logger = require('../logging/logger');
 
 
 exports.getMyPublishOrderform = (req, res) => {
-    console.log(req.user.stationname)
+
     orderModel.find({'publishPositions.stationname': {$eq: req.user.stationname}}, {
             __v: 0
         }, (err, data) => {
@@ -25,7 +25,6 @@ exports.getMyPublishOrderform = (req, res) => {
                 logger.error('Response code:406, message: Not Successed Saved');
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
-                console.log(data);
                 return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
             }
         }
@@ -43,7 +42,7 @@ exports.getMyreceiveOrderform = (req, res) => {
                 logger.error('Response code:406, message: Not Successed Saved');
                 return res.status(406).send({success: false, message: 'Not Successed Saved'});
             } else {
-                console.log(data);
+
                 return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
             }
         }
@@ -239,8 +238,8 @@ let addOrderForm = (req, res) => {
                             adBeginDate: orderInformation.adBeginDate,
                             adEndDate: orderInformation.adEndDate,
                             currency: orderInformation.receivePosition.currency,
-                            receiveStation: orderInformation.receivePosition.stationname,
-                            shouldPayStation: orderInformation.receivePosition.stationname,
+                            receiveStation: element.stationname,
+                            shouldPayStation: element.stationname,
                             customerWechat: orderInformation.customerWechat,
                             orderAmont: shouldPay,
                             remark: orderInformation.remark
@@ -262,22 +261,18 @@ let addOrderForm = (req, res) => {
                         res.status(200).send({success: true, message: 'Successed Saved'});
                     }
                 });
-
             });
         }
     }
 };
-exports.payAmount = (req, res) => {
 
+exports.payAmount = (req, res) => {
     let paymentElement = {};
     paymentElement._id = req.body['checkOrderId'];
     paymentElement.paymentDate = req.body['payDay'];
     paymentElement.paymentAmount = req.body['paymentAmount'];
-    orderModel.update({
-            'checkOrderRecords._id': paymentElement._id
-        }, {
-            $push: {
-                'checkOrderRecords.$.paymentHistories': {
+    orderModel.update({'checkOrderRecords._id': paymentElement._id }, {
+            $push: {'checkOrderRecords.$.paymentHistories': {
                     paymentDate: paymentElement.paymentDate,
                     paymentAmount: paymentElement.paymentAmount
                 }
@@ -348,11 +343,10 @@ exports.updatePayment = (req, res) => {
         }
     );
 };
-exports.deletePayment = (req, res) => {
 
+exports.deletePayment = (req, res) => {
     let paymentElement = {};
     paymentElement.paymentId = req.body['paymentId'];
-
     orderModel.update({
         'checkOrderRecords._id': paymentElement.checkOrderId
     }, {

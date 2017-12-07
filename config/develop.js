@@ -7,4 +7,4 @@ module.exports = {
         saveUninitialized: true
     },
     saltword: 'ABL'
-}
+};
