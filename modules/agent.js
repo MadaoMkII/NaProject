@@ -16,6 +16,7 @@ let agentSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
+    registerby:String,
     receiverate: {required: true, type: Number},
     publishrate: {required: true, type: Number}
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});

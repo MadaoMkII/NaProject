@@ -38,10 +38,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -81,10 +81,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -123,10 +123,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -165,10 +165,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -204,10 +204,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -246,10 +246,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -292,13 +292,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -341,13 +341,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/sessions.json?sEcho=2&iColumns=12';
         req.method = 'HEAD';
@@ -390,13 +390,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/sessions.json?sEcho=2&iColumns=12';
         req.method = 'HEAD';
@@ -435,10 +435,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -477,13 +477,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function(err) {
           self.callback(null, err);
-        }
+        };
         
         req.url = '/';
         req.method = 'POST';
@@ -524,10 +524,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -565,10 +565,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -606,10 +606,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -647,13 +647,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function(err) {
           self.callback(null, err);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -692,13 +692,13 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function(err) {
           self.callback(null, err);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -737,10 +737,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -776,10 +776,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -817,10 +817,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -858,10 +858,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -899,10 +899,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.url = '/admin';
         req.method = 'HEAD';
@@ -940,10 +940,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -981,10 +981,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -1022,10 +1022,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.url = '/';
         req.method = 'HEAD';
@@ -1064,10 +1064,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1104,10 +1104,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1143,10 +1143,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1182,10 +1182,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1221,10 +1221,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1260,10 +1260,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};
@@ -1299,10 +1299,10 @@ vows.describe('DigestStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.url = '/';
         req.headers = {};

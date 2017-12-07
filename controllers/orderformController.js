@@ -142,8 +142,8 @@ exports.updateOrderForm = (req, res) => {
         );
     }
 };
-let addOrderForm = (req, res) => {
 
+let addOrderForm = (req, res) => {
     let orderInformation = req.body;
     let includeFlag = false;
     let publishPositions = orderInformation.publishPositions;

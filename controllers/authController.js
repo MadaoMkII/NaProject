@@ -2,8 +2,8 @@ const passport = require('passport');
 const logger = require('../logging/logger');
 
 
-exports.loginUser = function (req, res, next) {
-    passport.authenticate('local', function (err, user) {
+exports.loginUser = (req, res, next) => {
+    passport.authenticate('local', (err, user) => {
         if (req.user) {
             logger.debug(req.user + ' has been logout for new loggin');
             req.logout();
@@ -23,7 +23,7 @@ exports.loginUser = function (req, res, next) {
                     'Authentication faild, please check username and password'
             });
         }
-        req.login(user, function (err) {
+        req.login(user, (err) => {
             if (err) {
                 logger.error('Error location : Class: authController, function: loginUser. ' + err);
                 return next(err);
@@ -33,7 +33,7 @@ exports.loginUser = function (req, res, next) {
     })(req, res, next);
 };
 //tool function translates Privilege to amount
-let getPrivilege = function (privilegeName) {
+let getPrivilege = (privilegeName) => {
     let privilege = 0;
     switch (privilegeName) {
         case 'Admin':
@@ -53,7 +53,7 @@ let getPrivilege = function (privilegeName) {
 };
 //check if user has been login though passport
 //check if the requst has enough privilege for a certain API
-exports.isAuthenticated = function (privilegeName) {
+exports.isAuthenticated = (privilegeName) => {
 
     return function (req, res, next) {
 
@@ -62,13 +62,10 @@ exports.isAuthenticated = function (privilegeName) {
                 return res.status(403).json({success: false, message: 'Insufficient privilege'})
             }
             return next();
-
         } else {
             return res.status(401).json(
                 {success: false, message: 'Authentication faild, need login first'}
             );
         }
-
-
     }
 };

@@ -30,10 +30,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOnNlY3JldA==';
@@ -66,10 +66,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOnNlY3JldA==';
@@ -100,13 +100,13 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.error = function(err) {
           self.callback(null, err);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOnNlY3JldA==';
@@ -138,10 +138,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         process.nextTick(function () {
@@ -171,10 +171,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'XXXXX Ym9iOnNlY3JldA==';
@@ -205,10 +205,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOg==';
@@ -239,10 +239,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic OnNlY3JldA==';
@@ -273,10 +273,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic';
@@ -307,10 +307,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(status) {
           self.callback(null, status);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic *****';
@@ -341,10 +341,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'BASIC Ym9iOnNlY3JldA==';
@@ -377,10 +377,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
-        }
+        };
         strategy.fail = function(challenge) {
           self.callback(null, challenge);
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOnNlY3JldA==';
@@ -418,10 +418,10 @@ vows.describe('BasicStrategy').addBatch({
         var req = {};
         strategy.success = function(user) {
           self.callback(null, user);
-        }
+        };
         strategy.fail = function() {
           self.callback(new Error('should not be called'));
-        }
+        };
         
         req.headers = {};
         req.headers.authorization = 'Basic Ym9iOnNlY3JldA==';

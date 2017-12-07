@@ -14,7 +14,7 @@ const urlencoded_body_parser = bodyParser.urlencoded({extended: true});
 const passportService = require('./config/passport');
 
 
-// todo NODE_ENV will use
+// todo NODE_ENV
 let app = express();
 
 
@@ -45,22 +45,20 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
     });
 });
 
-app.post('/addagent', isAuthenticated('Admin'), userController.addAgent);//done
+app.post('/user/addagent', isAuthenticated('Admin'), userController.addagent);//done
+app.post('/user/addadmin', isAuthenticated('Super_Admin'), userController.addadmin);//done
 
-app.post('/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
-app.get('/getorderform', isAuthenticated('Agent'), orderformController.getOrderForm);
-app.get('/getmypublishorderform', isAuthenticated('Agent'), orderformController.getMyPublishOrderform);
-app.get('/getmyreceiveorderform', isAuthenticated('Agent'), orderformController.getMyreceiveOrderform);
-app.get('/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
-app.post('/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
-app.post('/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
-app.post('/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
-app.post('/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
-app.post('/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
+app.post('/orderform/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
+app.get('/orderform/getorderform', isAuthenticated('Agent'), orderformController.getOrderForm);
+app.get('/orderform/getmypublishorderform', isAuthenticated('Agent'), orderformController.getMyPublishOrderform);
+app.get('/orderform/getmyreceiveorderform', isAuthenticated('Agent'), orderformController.getMyreceiveOrderform);
+app.get('/orderform/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
+app.post('/orderform/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
+app.post('/orderform/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
+app.post('/orderform/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
+app.post('/orderform/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
+app.post('/orderform/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
 
-// app.post('/addAdmin', isAuthenticated('Super_Admin'), userController.);
 app.post('/login', loginUser);
-
-
 app.listen(3000);
 console.log("Begin Server");
