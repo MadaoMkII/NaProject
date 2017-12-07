@@ -5,13 +5,19 @@ const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
 
+
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const json_body_parser = bodyParser.json();
 const urlencoded_body_parser = bodyParser.urlencoded({extended: true});
 const passportService = require('./config/passport');
+
+
+// todo NODE_ENV will use
 let app = express();
+
+
 app.use(json_body_parser);
 app.use(urlencoded_body_parser);
 app.use(session({

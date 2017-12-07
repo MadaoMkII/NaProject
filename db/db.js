@@ -1,13 +1,17 @@
-let mongoose = require('mongoose');
-let config = require('../config/develop');
-let autoIncrement = require('mongoose-auto-increment');
+const mongoose = require('mongoose');
+const logger = require('../logging/logger');
+const config = require('../config/develop');
+const autoIncrement = require('mongoose-auto-increment');
 
 mongoose.connect(config.url, {useMongoClient: true});
 const db = mongoose.connection;
 autoIncrement.initialize(db);
 mongoose.Promise = global.Promise;
+
 db.once('open', () => {
-    console.log('连接数据库成功')
+    logger.info('Connected with DB');
+    logger.trace(db);
+    console.log('Connected with DB');
 })
 
 db.on('error', function (error) {

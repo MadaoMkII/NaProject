@@ -23,7 +23,8 @@ exports.getOrderForm = (req, res) => {
         }
     );
 };
-exports.getOrderFormByCheckId = (req, res) => {//DOne
+
+exports.getOrderFormByCheckId = (req, res) => {//Done
     orderModel.find({'checkOrderRecords._id': {$eq: req.body.checkOrderId}}, {
         __v: 0,
         updated_at: 0,
@@ -54,8 +55,6 @@ exports.getOrderFormByDates = (req, res) => {
         }
     );
 };
-
-
 exports.updateOrderForm = (req, res) => {
     if (req.body['rebuilt']) {
         orderModel.remove({_id: req.body['_orderformid']}, (err) => {
@@ -95,7 +94,6 @@ exports.updateOrderForm = (req, res) => {
         );
     }
 };
-
 let addOrderForm = (req, res) => {
 
     let orderInformation = req.body;
@@ -321,6 +319,5 @@ exports.deletePayment = (req, res) => {
         }
     });
 };
-
 
 exports.addOrderForm = addOrderForm;
