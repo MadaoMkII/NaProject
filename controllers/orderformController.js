@@ -124,8 +124,8 @@ exports.updateOrderForm = (req, res) => {
                     paymentMethod: req.body.paymentMethod,
                     customerWechat: req.body.customerWechat,
                     customerPhone: req.body.customerPhone,
-                    remark: req.body.remark,
-                    orderTotalAmont: req.body.orderTotalAmont
+                    remark: req.body.remark
+
                 }
             },
             (err) => {

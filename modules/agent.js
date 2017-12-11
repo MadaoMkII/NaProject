@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const db = require('../db/db');
-
+const logger = require('../logging/logger');
 let agentSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -26,12 +26,16 @@ agentSchema.statics.findByPositionName = function (stationname, callback) {
 
     agentModel.find({stationname: {"$in": stationname}}, {
         _id: 0,
-        receiverate: 1,
+            receiverate: 1,
         publishrate: 1,
         stationname: 1
     }, (err, agents) => {
 
-        if (err) console.log(err + '!');
+        if (err) {
+            logger.error('Error location : Class: agent, function: addAgent. ');
+            logger.error(err);
+
+        }
         return callback(err, agents);
 
     })
@@ -41,39 +45,38 @@ agentSchema.statics.findByPositionName = function (stationname, callback) {
 agentSchema.statics.addNewAgent = (userinfo) => {
     let agentEntity = new agentModel(userinfo);
     agentEntity.save((err) => {
-
         if (err) {
-            console.log(err);
+            logger.error('Error location : Class: agent, function: addAgent. ');
+            logger.error(err);
             return err;
-
         }
     });
-
-
-    agentSchema.statics.findByUsername = (username, callback) => {
-
-
-    };
 
     agentSchema.statics.getAllAgent = function (callback) {
         agentModel.find({'role': {$eq: 'Agent'}}, 'username country role stationname receiverate publishrate createtimestamp',
             (err, agents) => {
-                if (err) return console.log(err);
+                if (err) {
+                    logger.error('Error location : Class: agent, function: addAgent. ');
+                    logger.error(err);
+                    return err;
+                }
                 if (agents) return callback(null, agents);
                 return callback(err, {'Massage': 'Can not find anything'});
             })
     };
 
     agentSchema.statics.isDuplicationName = function (data, callback) {
-
         agentModel.findOne({$or: [{'username': data.username, 'stationname': data.stationname}]}, (err, agents) => {
-
-            if (err) return null;
-            if (agents) return callback(null, agents);
+            if (err) {
+                logger.error('Error location : Class: agent, function: addAgent. ');
+                logger.error(err);
+                return err;
+            }
+            if (agents) {
+                return callback(null, agents);
+            }
             return callback(err, false);
-
         })
-
     }
 };
 let agentModel = mongoose.model('Agent', agentSchema);

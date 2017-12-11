@@ -9,7 +9,19 @@ const publisStation = new mongoose.Schema(
         currency: String
     }
 );
-
+//
+//
+// x新功能 1，注册agent 2,logout
+//
+// {
+//     type: 'received' : 'publish',
+//     agent: 'tutu',
+//     status: 'paid', 'approved' etc
+//     beginDateRange: {datestamp, datestamp},
+//     endDateRange: {datestamp, datestamp},
+//     range: {10-20},
+//     sortBy: 'desc' or 'asec'
+}
 const paymentHistory = new mongoose.Schema({
         paymentDate: Date,
         paymentAmount: Number
