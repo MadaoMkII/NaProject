@@ -1,7 +1,15 @@
 const passport = require('passport');
 const logger = require('../logging/logger');
 
-
+exports.logoutUser = (req, res) => {
+    if (req.user) {
+        logger.debug(req.user + ' has been logout for new loggin');
+        req.logout();
+        return res.status(200).json({success: true, message: 'logout succeeded'});
+    } else {
+        return res.status(406).json({success: false, message: 'need login first'});
+    }
+};
 exports.loginUser = (req, res, next) => {
     passport.authenticate('local', (err, user) => {
         if (req.user) {

@@ -31,4 +31,4 @@ db.on('close', (info) => {
     logger.warn('Db has dissconnected: ' + info);
     mongoose.connect(config.url, {server: {auto_reconnect: true}});
 });
-
+module.exports.mongoose = mongoose;

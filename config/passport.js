@@ -1,6 +1,6 @@
 const passport = require('passport');
 const config = require('../config/develop');
-const angentModel = require('../modules/agent');
+const angentModel = require('../modules/agent').agentModel;
 const logger = require('../logging/logger');
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -21,7 +21,7 @@ passport.use(new LocalStrategy('local',
         angentModel.findOne({'username': username, 'password': resultPassowrd}, (err, data) => {
             foundUser = data;
             if (err) {
-                logger.error('passport: passport.use '+err);
+                logger.error('passport: passport.use ' + err);
                 return callback(err, false);
             }
             if (!data) return callback(null, false);
@@ -31,3 +31,4 @@ passport.use(new LocalStrategy('local',
 
     }
 ));
+exports.passport = passport;

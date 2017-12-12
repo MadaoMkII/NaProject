@@ -1,6 +1,7 @@
-const angentModel = require('../modules/agent');
+const angentModel = require('../modules/agent').agentModel;
 const orderModel = require('../modules/orderForm').orderFormModel;
 const logger = require('../logging/logger');
+
 //S1 接的广告
 // Total S1+S2+S3 = 600
 //
@@ -13,12 +14,81 @@ const logger = require('../logging/logger');
 // s3pub =(S3 :150) * 0.5
 // S1 :250: currency
 
+exports.getMyOrderform = (req, res) => {
+    let option = req.params.option;
+    let stationname;
+    let command = {};
 
-exports.getMyPublishOrderform = (req, res) => {
+    switch (option) {
+        case 'options':
+            if (req.query['receiveSationName']) {
+                if (req.user.role.toString() === 'Agent') {
+                    stationname = req.user.stationname;
+                } else {
+                    if (!req.query['receiveSationName']) {
+                        return res.status(406).json({success: false, message: 'receiveSationName can not be empty'});
+                    }
+                    stationname = req.query['receiveSationName'];
+                }
+                command['receivePosition'] = {$eq: stationname};
+            }
 
-    orderModel.find({'publishPositions.stationname': {$eq: req.user.stationname}}, {
-            __v: 0
-        }, (err, data) => {
+            if (req.query['adStatus']) {
+
+                if (!req.query['adStatus']) {
+                    return res.status(406).json({success: false, message: 'adStatus can not be empty'});
+                }
+                stationname = req.query['adStatus'];
+
+                command['adStatus'] = {$eq: stationname};
+            }
+
+
+            if (req.query['publishStationName']) {
+                if (req.user.role === 'Agent') {
+                    stationname = req.user.stationname;
+                } else {
+                    if (!req.query['publishStationName']) {
+                        return res.status(406).json({success: false, message: 'publishStationName can not be empty'});
+                    }
+                    stationname = req.query['publishStationName'];
+                }
+                command['publishPositions.stationname'] = {$eq: stationname};
+            }
+
+            if (req.query['endBeforeDate'] && req.query['endAfterDate']) {
+                command['adEndDate'] = {
+                    $lt: new Date(req.body['endBeforeDate']),
+                    $gt: new Date(req.body['endAfterDate'])
+                };
+            }
+            if (req.query['beginBeforeDate'] && req.query['beginAfterDate']) {
+                command['adBeginDate'] = {
+                    $lt: new Date(req.body['beginBeforeDate']),
+                    $gt: new Date(req.body['beginAfterDate'])
+                };
+            }
+            break;
+
+        case 'all':
+            if (req.user.role === 'Agent') {
+                return res.status(403).json({success: false, message: 'Insufficient privilege'});
+            }
+            command = null;
+            break;
+
+        case 'byID':
+            if (req.query._id) {
+                if (req.user.role === 'Agent') {
+                    return res.status(403).json({success: false, message: 'Insufficient privilege'});
+                }
+                command['_id'] = {$eq: req.query._id};
+            }
+        // default:
+        //     break;
+    }
+
+    orderModel.find(command, {__v: 0}, (err, data) => {
             if (err) {
                 logger.info(req.body);
                 logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
@@ -29,76 +99,9 @@ exports.getMyPublishOrderform = (req, res) => {
             }
         }
     );
-};
+}
+;
 
-exports.getMyreceiveOrderform = (req, res) => {
-
-    orderModel.find({'receivePosition': {$eq: req.user.stationname}}, {
-            __v: 0
-        }, (err, data) => {
-            if (err) {
-                logger.info(req.body);
-                logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
-                logger.error('Response code:406, message: Not Successed Saved');
-                return res.status(406).send({success: false, message: 'Not Successed Saved'});
-            } else {
-
-                return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
-            }
-        }
-    );
-};
-
-exports.getOrderForm = (req, res) => {
-    orderModel.find({}, {__v: 0, updated_at: 0, created_at: 0}, (err, data) => {
-            if (err) {
-                logger.info(req.body);
-                logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
-                logger.error('Response code:406, message: Not Successed Saved');
-                return res.status(406).send({success: false, message: 'Not Successed Saved'});
-            } else {
-                return res.status(200).send({success: true, message: 'Successed Saved', orderform: data});
-            }
-        }
-    );
-};
-
-exports.getOrderFormByCheckId = (req, res) => {//Done
-
-    let id = req.query._id;
-    orderModel.find({'checkOrderRecords._id': {$eq: id}}, {
-        __v: 0,
-        updated_at: 0,
-        created_at: 0
-    }, (err, data) => {
-        if (err) {
-            logger.info(req.body);
-            logger.error('Error location : Class: orderformController, function: getOrderFormByCheckId. ' + err);
-            logger.error('Response code:406, message: Not Successed Saved');
-            return res.status(406).send({success: false, message: 'Not Successed Saved'});
-        } else {
-            return res.status(200).send({success: true, orderForm: data});
-        }
-    });
-};
-exports.getOrderFormByDates = (req, res) => {
-
-    orderModel.find({created_at: {$lt: new Date(req.body['beforeDate']), $gt: new Date(req.body['afterDate'])}}, {
-            __v: 0,
-            updated_at: 0,
-            created_at: 0
-        }, (err, data) => {
-            if (err) {
-                logger.info(req.body);
-                logger.error('Error location : Class: orderformController, function: getOrderFormByDates. ' + err);
-                logger.error('Response code:406, message: Not Successed Saved');
-                return res.status(406).send({success: false, message: 'Not Successed Saved'});
-            } else {
-                return res.status(200).send({success: true, orderForm: data});
-            }
-        }
-    );
-};
 exports.updateOrderForm = (req, res) => {
     if (req.body['rebuilt']) {
         orderModel.remove({_id: req.body['_orderformid']}, (err) => {
@@ -160,18 +163,6 @@ let addOrderForm = (req, res) => {
         includeFlag = true;
     }
 
-//接单总价*20
-    //发单 总价/发单人数 * 发单比例S1 接的广告
-    // Total S1+S2+S3 = 600
-    //
-    // receiveposition S1= total * 20%
-    //
-    //     Publish position s1, s2, s3
-    //
-    // s1pub =(S1 :250) * 0.5
-    // s2pub =(S2 :200) * 0.5
-    // s3pub =(S3 :150) * 0.5
-
     {
         if (!orderInformation.adStatus) {
             orderForm.adStatus = 'Ongoing';
@@ -180,6 +171,7 @@ let addOrderForm = (req, res) => {
         }
 
         orderForm._id = req.body['_orderformid'];
+        orderForm.status = 'Pending';
         orderForm.adName = orderInformation.adName;
         orderForm.adType = orderInformation.adType;
         orderForm.adBeginDate = orderInformation.adBeginDate;
@@ -271,8 +263,9 @@ exports.payAmount = (req, res) => {
     paymentElement._id = req.body['checkOrderId'];
     paymentElement.paymentDate = req.body['payDay'];
     paymentElement.paymentAmount = req.body['paymentAmount'];
-    orderModel.update({'checkOrderRecords._id': paymentElement._id }, {
-            $push: {'checkOrderRecords.$.paymentHistories': {
+    orderModel.update({'checkOrderRecords._id': paymentElement._id}, {
+            $push: {
+                'checkOrderRecords.$.paymentHistories': {
                     paymentDate: paymentElement.paymentDate,
                     paymentAmount: paymentElement.paymentAmount
                 }

@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const db = require('../db/db');
+const mongoose = require('../db/db').mongoose;
 const logger = require('../logging/logger');
 let agentSchema = new mongoose.Schema({
     username: {
@@ -16,17 +15,17 @@ let agentSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    registerby:String,
+    registerby: String,
     receiverate: {required: true, type: Number},
     publishrate: {required: true, type: Number}
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});
 
-
+let agentModel = mongoose.model('Agent', agentSchema);
 agentSchema.statics.findByPositionName = function (stationname, callback) {
 
     agentModel.find({stationname: {"$in": stationname}}, {
         _id: 0,
-            receiverate: 1,
+        receiverate: 1,
         publishrate: 1,
         stationname: 1
     }, (err, agents) => {
@@ -66,7 +65,7 @@ agentSchema.statics.addNewAgent = (userinfo) => {
     };
 
     agentSchema.statics.isDuplicationName = function (data, callback) {
-        agentModel.findOne({$or: [{'username': data.username, 'stationname': data.stationname}]}, (err, agents) => {
+        agentModel.find({$or: [{'username': data.username, 'stationname': data.stationname}]}, (err, agents) => {
             if (err) {
                 logger.error('Error location : Class: agent, function: addAgent. ');
                 logger.error(err);
@@ -79,7 +78,7 @@ agentSchema.statics.addNewAgent = (userinfo) => {
         })
     }
 };
-let agentModel = mongoose.model('Agent', agentSchema);
 
-module.exports = exports = agentModel;
+
+exports.agentModel = agentModel;
 

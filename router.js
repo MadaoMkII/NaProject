@@ -1,20 +1,21 @@
 const express = require('express');
-const passport = require('passport');
+const passport = require('./config/passport').passport;
 const userController = require('./controllers/userController');
 const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
 const loginUser = require('./controllers/authController').loginUser;
-
+const logoutUser = require('./controllers/authController').logoutUser;
 
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const json_body_parser = bodyParser.json();
 const urlencoded_body_parser = bodyParser.urlencoded({extended: true});
-const passportService = require('./config/passport');
 
 
-// todo NODE_ENV
+let adminRouter = express.Router();
+let agentRouter = express.Router();
+let loginRouter = express.Router();
 let app = express();
 
 
@@ -37,28 +38,34 @@ app.use(passport.session());
 // Create a new Express application.
 // Configure Express application.
 
-app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
+agentRouter.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
     res.status(200).json({
         success: true,
         message: 'Login successful! ' + 'Your role is : ' + req.user.role +
-        '  Your username is : ' + req.user.username
+        ',  Your username is : ' + req.user.username + ',  Your station is : ' + req.user.stationname
     });
 });
 
-app.post('/user/addagent', isAuthenticated('Admin'), userController.addagent);//done
-app.post('/user/addadmin', isAuthenticated('Super_Admin'), userController.addadmin);//done
+adminRouter.post('/user/addagent', isAuthenticated('Agent'), userController.addAgent);//done
+// agentRouter.post('/user/resetpassword', isAuthenticated('Super_Admin'), userController.add);//done
 
-app.post('/orderform/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
-app.get('/orderform/getorderform', isAuthenticated('Agent'), orderformController.getOrderForm);
-app.get('/orderform/getmypublishorderform', isAuthenticated('Agent'), orderformController.getMyPublishOrderform);
-app.get('/orderform/getmyreceiveorderform', isAuthenticated('Agent'), orderformController.getMyreceiveOrderform);
-app.get('/orderform/getorderformbyid', isAuthenticated('Admin'), orderformController.getOrderFormByCheckId);
-app.post('/orderform/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
-app.post('/orderform/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
-app.post('/orderform/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
-app.post('/orderform/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
-app.post('/orderform/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
 
-app.post('/login', loginUser);
+agentRouter.post('/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
+agentRouter.get('/getmyorderform/:option', isAuthenticated('Agent'), orderformController.getMyOrderform);
+
+
+// adminRouter.get('/orderform/getorderform', isAuthenticated('Agent'), orderformController.getOrderForm);
+// adminRouter.post('/orderform/getorderformbydates', isAuthenticated('Admin'), orderformController.getOrderFormByDates);//done
+adminRouter.post('/orderform/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
+adminRouter.post('/orderform/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
+adminRouter.post('/orderform/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
+adminRouter.post('/orderform/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
+
+loginRouter.post('/login', loginUser);
+loginRouter.post('/logout', logoutUser);
+
+app.use('/user', loginRouter);
+app.use('/', agentRouter);
+
 app.listen(3000);
 console.log("Begin Server");

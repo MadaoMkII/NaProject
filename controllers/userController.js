@@ -1,21 +1,53 @@
 const config = require('../config/develop');
-const agentModel = require('../modules/agent');
+const agentModel = require('../modules/agent').agentModel;
 const logger = require('../logging/logger');
 
+exports.addAdmin = (req, res) => {
+
+    let result = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
+    let userInfo = {
+        username: req.body.username,
+        password: result,
+        country: req.user.country,
+        role: 'Admin',
+        registerby: req.user.stationname,
+        stationname: req.body.stationname,
+        receiverate: req.body.receiverate,
+        publishrate: req.body.publishrate
+    };
+    new agentModel(userInfo).save((err) => {
+        if (err) {
+            logger.info(req.body);
+            logger.error('Error location : Class: userController, function: addAgent. ' + err);
+            logger.error('Response code:503, message: Error Happened , please check input data');
+
+            if (err.toString().includes('duplicate')) {
+                return res.status(406).json({
+                    success: false,
+                    message: 'Duplication Username or StationName. The Statian name is :' + userInfo.stationname
+                });
+            } else {
+                return res.status(409).json({success: false, message: 'Error happen when adding to DB'});
+            }
+        }
+        return res.status(200).json(userInfo);
+    });
+};
 
 exports.addAgent = (req, res) => {
 
     let result = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
     let userInfo = {
-        'username': req.body.username,
-        'password': result,
-        'country': req.user.country,
-        'role': 'Agent',
-        'stationname': req.body.stationname,
-        'receiverate': req.body.receiverate,
-        'publishrate': req.body.publishrate
+        username: req.body.username,
+        password: result,
+        country: req.user.country,
+        role: 'Agent',
+        registerby: req.user.stationname,
+        stationname: req.body.stationname,
+        receiverate: req.body.receiverate,
+        publishrate: req.body.publishrate
     };
-    new agentModel(userInfo).save(userInfo, (err) => {
+    new agentModel(userInfo).save((err) => {
         if (err) {
             logger.info(req.body);
             logger.error('Error location : Class: userController, function: addAgent. ' + err);
@@ -32,24 +64,7 @@ exports.addAgent = (req, res) => {
         }
         return res.status(200).json(userInfo);
     });
-
-
 };
-
-
-// exports.addAdmin = function (req, res) {
-//     //todo
-//     // let salt = 'abl';
-//     // let result = md5.update(req.body.password + salt).digest('hex');
-//     // let agentInfo = {
-//     //     'username': req.body.username,
-//     //     'password': result,
-//     //     'country': req.body.country,
-//     //     'role': 'Admin',
-//     //     'createtimestamp': dateFormat(new Date(), 'yyyy-mm-dd,HH:MM:ss ')
-//     // };
-//     // return res.status(200).json(agentInfo);
-// }
 
 // exports.getAllAgents = function (req, res) {
 //

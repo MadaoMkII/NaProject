@@ -1,22 +1,12 @@
 {
-  "name": "express-4.x-http-basic-example",
+  "name": "ABLproject",
   "version": "0.0.0",
-  "description": "Express 3.x app using Passport for authentication via HTTP Basic scheme.",
+  "description": "ABLproject order managerment.",
   "keywords": [
-    "example",
-    "express",
-    "passport"
+    "ABL"
   ],
-  "author": "Jared Hanson",
-  "license": "Unlicense",
-  "homepage": "https://github.com/passport/express-3.x-http-basic-example",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/passport/express-3.x-http-basic-example.git"
-  },
-  "bugs": {
-    "url": "https://github.com/passport/express-3.x-http-basic-example/issues"
-  },
+  "author": "老司机",
+  "license": "licensed",
   "dependencies": {
     "body-parser": "^1.13.3",
     "connect-ensure-login": "^0.1.1",
@@ -25,11 +15,12 @@
     "ejs": "^2.3.3",
     "express": "^4.13.3",
     "express-session": "^1.11.3",
-    "log4js": "^2.3.12",
+    "log4js": "^2.4.1",
     "mongoose": "^4.13.6",
     "mongoose-auto-increment": "5.0.1",
     "morgan": "^1.6.1",
-    "passport": "^0.2.2",
+    "npm": "^5.6.0",
+    "passport": "^0.4.0",
     "passport-local": "^1.0.0"
   }
 }
