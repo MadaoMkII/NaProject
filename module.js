@@ -12,17 +12,18 @@
 // logger.error('Cheese is too ripe!');
 // logger.fatal('Cheese was breeding ground for listeria.');
 
-var x = [1,2,4];
-var student={
-    name:'wujunchuan',
-    age:22,
-    locate:{
-        country:'china',
-        city:'xiamen',
-        school:'XMUT'
-    }};
+var x = [1, 2, 4];
+var student = {
+    name: 'wujunchuan',
+    age: 22,
+    locate: {
+        country: 'china',
+        city: 'xiamen',
+        school: 'XMUT'
+    }
+};
 
-for (let a of x){
+for (let a of x) {
 
     console.log(a);
 }

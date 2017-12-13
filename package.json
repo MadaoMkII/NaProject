@@ -6,7 +6,11 @@
     "ABL"
   ],
   "author": "老司机",
-  "license": "licensed",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MadaoMkII/NaProject.git"
+  },
+  "license": "UNLICENSED",
   "dependencies": {
     "body-parser": "^1.13.3",
     "connect-ensure-login": "^0.1.1",

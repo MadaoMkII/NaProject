@@ -8,10 +8,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="express-route-fs-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="express-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="passport-DefinitelyTyped" level="application" />
-    <orderEntry type="library" name="passport-local-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="passport-strategy-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="@types/mongoose" level="application" />
+    <orderEntry type="library" name="@types/passport" level="application" />
+    <orderEntry type="library" name="@types/passport-strategy" level="application" />
+    <orderEntry type="library" name="@types/express" level="application" />
+    <orderEntry type="library" name="@types/passport-local" level="application" />
+    <orderEntry type="library" name="@types/express-route-fs" level="application" />
+    <orderEntry type="library" name="@types/passport-http" level="application" />
+    <orderEntry type="library" name="@types/express-session" level="application" />
+    <orderEntry type="library" name="jquery-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="@types/passport-jwt" level="application" />
   </component>
 </module>

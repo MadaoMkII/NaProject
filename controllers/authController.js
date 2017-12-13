@@ -1,6 +1,16 @@
 const passport = require('passport');
 const logger = require('../logging/logger');
 
+
+exports.checkhealth = (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'Login successful! ' + 'Your role is : ' + req.user.role +
+        ',  Your username is : ' + req.user.username + ',  Your station is : ' + req.user.stationname
+    });
+};
+
+
 exports.logoutUser = (req, res) => {
     if (req.user) {
         logger.debug(req.user + ' has been logout for new loggin');

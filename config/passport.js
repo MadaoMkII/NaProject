@@ -15,8 +15,7 @@ passport.deserializeUser(function (username, callback) {
         });
     }
 );
-passport.use(new LocalStrategy('local',
-    function (username, password, callback) {
+passport.use(new LocalStrategy('local', (username, password, callback) => {
         let resultPassowrd = require('crypto').createHash('md5').update(password + config.saltword).digest('hex');
         angentModel.findOne({'username': username, 'password': resultPassowrd}, (err, data) => {
             foundUser = data;

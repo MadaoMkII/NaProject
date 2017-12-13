@@ -20,8 +20,9 @@ let agentSchema = new mongoose.Schema({
     publishrate: {required: true, type: Number}
 }, {'timestamps': {'createdAt': 'created_at', 'updatedAt': 'updated_at'}});
 
-let agentModel = mongoose.model('Agent', agentSchema);
-agentSchema.statics.findByPositionName = function (stationname, callback) {
+
+
+agentSchema.statics.findByPositionName = (stationname, callback) => {
 
     agentModel.find({stationname: {"$in": stationname}}, {
         _id: 0,
@@ -78,7 +79,6 @@ agentSchema.statics.addNewAgent = (userinfo) => {
         })
     }
 };
-
-
+let agentModel = mongoose.model('Agent', agentSchema);
 exports.agentModel = agentModel;
 

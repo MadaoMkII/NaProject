@@ -20,7 +20,22 @@ exports.getMyOrderform = (req, res) => {
     let command = {};
 
     switch (option) {
-        case 'options':
+
+        case 'search':
+
+            if (req.user.role === 'Agent' && Object.keys(req.query).length === 0) {
+                return res.status(403).json({success: false, message: 'Insufficient privilege'});
+            }
+
+            if (req.query._id) {
+                if (req.user.role === 'Agent') {
+                    return res.status(403).json({success: false, message: 'Insufficient privilege'});
+                }
+                command['_id'] = {$eq: req.query._id};
+                break;
+            }
+
+
             if (req.query['receiveSationName']) {
                 if (req.user.role.toString() === 'Agent') {
                     stationname = req.user.stationname;
@@ -32,17 +47,13 @@ exports.getMyOrderform = (req, res) => {
                 }
                 command['receivePosition'] = {$eq: stationname};
             }
-
             if (req.query['adStatus']) {
-
                 if (!req.query['adStatus']) {
                     return res.status(406).json({success: false, message: 'adStatus can not be empty'});
                 }
                 stationname = req.query['adStatus'];
-
                 command['adStatus'] = {$eq: stationname};
             }
-
 
             if (req.query['publishStationName']) {
                 if (req.user.role === 'Agent') {
@@ -70,22 +81,8 @@ exports.getMyOrderform = (req, res) => {
             }
             break;
 
-        case 'all':
-            if (req.user.role === 'Agent') {
-                return res.status(403).json({success: false, message: 'Insufficient privilege'});
-            }
-            command = null;
-            break;
-
-        case 'byID':
-            if (req.query._id) {
-                if (req.user.role === 'Agent') {
-                    return res.status(403).json({success: false, message: 'Insufficient privilege'});
-                }
-                command['_id'] = {$eq: req.query._id};
-            }
-        // default:
-        //     break;
+        default:
+            return res.status(406).json({success: false, message: 'Need correct param send'});
     }
 
     orderModel.find(command, {__v: 0}, (err, data) => {
@@ -99,8 +96,7 @@ exports.getMyOrderform = (req, res) => {
             }
         }
     );
-}
-;
+};
 
 exports.updateOrderForm = (req, res) => {
     if (req.body['rebuilt']) {
@@ -146,7 +142,7 @@ exports.updateOrderForm = (req, res) => {
     }
 };
 
-let addOrderForm = (req, res) => {
+exports.addOrderForm = addOrderForm = (req, res) => {
     let orderInformation = req.body;
     let includeFlag = false;
     let publishPositions = orderInformation.publishPositions;
@@ -360,5 +356,3 @@ exports.deletePayment = (req, res) => {
         }
     });
 };
-
-exports.addOrderForm = addOrderForm;

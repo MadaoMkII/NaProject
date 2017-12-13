@@ -66,18 +66,29 @@ exports.addAgent = (req, res) => {
     });
 };
 
-// exports.getAllAgents = function (req, res) {
-//
-//     agentModel.find({}, 'username country role createtimestamp', (err, agents) => {
-//
-//         if (err) {
-//
-//             return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
-//         }
-//         return res.status(200).json(agents);
-//
-//     })
-// };
+exports.getMyRegisterAgents = (req, res) => {
+
+    agentModel.find({registerby: req.user.stationname}, {password: 0}, (err, agents) => {
+
+        if (err) {
+            return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
+        }
+        return res.status(200).json(agents);
+    })
+};
+
+
+exports.updatepassword = (req, res) => {
+    let hashedPassword = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
+
+    agentModel.update({username: req.user.stationname}, {$set: {password: 1234}}, (err, agents) => {
+        if (err) {
+            return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
+        }
+        req.logOut();
+        return res.status(200).json({'succeed': true, 'massage': 'Please relogin'});
+    })
+};
 //
 // exports.getLimitAgents = function (req, res) {
 //     let today = new Date();
