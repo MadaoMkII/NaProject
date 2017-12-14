@@ -79,9 +79,10 @@ exports.getMyRegisterAgents = (req, res) => {
 
 
 exports.updatepassword = (req, res) => {
-    let hashedPassword = require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
+    let hashedPassword =
+        require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
 
-    agentModel.update({username: req.user.stationname}, {$set: {password: 1234}}, (err, agents) => {
+    agentModel.update({username: req.user.stationname}, {$set: {password: hashedPassword}}, (err) => {
         if (err) {
             return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
         }

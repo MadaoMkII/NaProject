@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{@types/express, @types/express-route-fs, @types/express-session, @types/mongoose, @types/passport, @types/passport-http, @types/passport-jwt, @types/passport-local, @types/passport-strategy, jquery-DefinitelyTyped, naProject/node_modules}" />
+    <file url="PROJECT" libraries="{@types/express, @types/mongoose, @types/passport, jquery-DefinitelyTyped, naProject/node_modules}" />
     <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>

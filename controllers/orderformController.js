@@ -14,7 +14,7 @@ const logger = require('../logging/logger');
 // s3pub =(S3 :150) * 0.5
 // S1 :250: currency
 
-exports.getMyOrderform = (req, res) => {
+exports.getOrderform = (req, res) => {
     let option = req.params.option;
     let stationname;
     let command = {};

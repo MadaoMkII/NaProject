@@ -30,4 +30,4 @@ passport.use(new LocalStrategy('local', (username, password, callback) => {
 
     }
 ));
-exports.passport = passport;
+module.exports = passport;

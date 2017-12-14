@@ -10,7 +10,6 @@ exports.checkhealth = (req, res) => {
     });
 };
 
-
 exports.logoutUser = (req, res) => {
     if (req.user) {
         logger.debug(req.user + ' has been logout for new loggin');
