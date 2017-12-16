@@ -1,117 +1,161 @@
-# Passport-HTTP
+# ABL OrderForm submit system
+It can  add update and detele Orderform
 
-HTTP Basic and Digest authentication strategies for [Passport](https://github.com/jaredhanson/passport).
 
-This module lets you authenticate HTTP requests using the standard basic and
-digest schemes in your Node.js applications.  By plugging into Passport, support
-for these schemes can be easily and unobtrusively integrated into any
-application or framework that supports [Connect](http://www.senchalabs.org/connect/)-style
-middleware, including [Express](http://expressjs.com/).
 
-## Install
+1,
+/login
+{"username": "abc1","password": "1234"}
+登录
 
-    $ npm install passport-http
+2,
+/user/updatepassword
+{"newpassword": "1234"}
+修改登录用户密码
 
-## Usage of HTTP Basic
+3，
+/user/addagent
+添加用户，用户名和小站名字不可以和之前重复
+{"username": "test1",
+ "password": "123",
+ "stationname": "S11",
+ "receiverate":0.6,
+ "publishrate":0.7
+}
 
-#### Configure Strategy
+2,
+/user/mystations 
+get the register stations by me.
+ do not work for agent privilege.
 
-The HTTP Basic authentication strategy authenticates users using a userid and
-password.  The strategy requires a `verify` callback, which accepts these
-credentials and calls `done` providing a user.
+3,
+/user/:country
+get the register stations by me.
+ do not work for agent and admin privilege.
 
-    passport.use(new BasicStrategy(
-      function(userid, password, done) {
-        User.findOne({ username: userid }, function (err, user) {
-          if (err) { return done(err); }
-          if (!user) { return done(null, false); }
-          if (!user.verifyPassword(password)) { return done(null, false); }
-          return done(null, user);
-        });
-      }
-    ));
-
-#### Authenticate Requests
-
-Use `passport.authenticate()`, specifying the `'basic'` strategy, to
-authenticate requests.  Requests containing an 'Authorization' header do not
-require session support, so the `session` option can be set to `false`.
-
-For example, as route middleware in an [Express](http://expressjs.com/)
-application:
-
-    app.get('/private', 
-      passport.authenticate('basic', { session: false }),
-      function(req, res) {
-        res.json(req.user);
-      });
-
-#### Examples
-
-For a complete, working example, refer to the [Basic example](https://github.com/passport/express-3.x-http-basic-example).
-
-## Usage of HTTP Digest
-
-#### Configure Strategy
-
-The HTTP Digest authentication strategy authenticates users using a username and
-password (aka shared secret).  The strategy requires a `secret` callback, which
-accepts a `username` and calls `done` providing a user and password known to the
-server.  The password is used to compute a hash, and authentication fails if it
-does not match that contained in the request.
-
-The strategy also accepts an optional `validate` callback, which receives
-nonce-related `params` that can be further inspected to determine if the request
-is valid.
-
-    passport.use(new DigestStrategy({ qop: 'auth' },
-      function(username, done) {
-        User.findOne({ username: username }, function (err, user) {
-          if (err) { return done(err); }
-          if (!user) { return done(null, false); }
-          return done(null, user, user.password);
-        });
+6,
+add a new orderform
+/orderform/addorderform
+{
+   "adName":"Hello",
+   "adType":"AD",
+   "adStatus":"Pending",
+   "adBeginDate":"2017-10-19",
+   "adEndDate":"2017-10-29",
+   "publishType":"Monthy",
+   "orderTotalAmont":3000,
+   "customerName":"王致和",
+   "paymentMethod":"Alipay",
+   "receivePosition":{
+      "stationname":"S1",
+      "currency":"Dol"
+   },
+   "publishPositions":[
+      {
+         "stationname":"S1",
+         "amount":300,
+         "currency":"Dol"
       },
-      function(params, done) {
-        // validate nonces as necessary
-        done(null, true)
+      {
+         "stationname":"S2",
+         "amount":200,
+         "currency":"Dol"
       }
-    ));
+   ],
+   "customerWechat":"ADC",
+   "customerPhone":"415-478-1234",
+   "remark":null,
+   "adContinue":false
+}
 
-#### Authenticate Requests
+4，
+update orderform information
+if rebuilt is true: checkorder will be overriten, the payment history will be earased. According to the rules, if 
+publishPositions, receivePosition and totalAmount has changes , rebuilt need to be true. 
+If the changes doesn't include these fields, rebuilt should be false.
+/orderform/updateorderform
+{
+   "rebuilt":true,
+   "adName":"Hello",
+   "adType":"AD",
+   "adStatus":"Pending",
+   "adBeginDate":"2017-10-19",
+   "adEndDate":"2017-10-29",
+   "publishType":"Monthy",
+   "orderTotalAmont":3000,
+   "customerName":"王致和",
+   "paymentMethod":"Alipay",
+   "receivePosition":{
+      "stationname":"S1",
+      "currency":"Dol"
+   },
+   "publishPositions":[
+      {
+         "stationname":"S1",
+         "amount":300,
+         "currency":"Dol"
+      },
+      {
+         "stationname":"S2",
+         "amount":200,
+         "currency":"Dol"
+      }
+   ],
+   "customerWechat":"ADC",
+   "customerPhone":"415-478-1234",
+   "remark":null,
+   "adContinue":false
+}
+/orderform/getorderform/:option
+There are 3 options for parameter:
 
-Use `passport.authenticate()`, specifying the `'digest'` strategy, to
-authenticate requests.  Requests containing an 'Authorization' header do not
-require session support, so the `session` option can be set to `false`.
+search:
+   it has queries, all of those can be use combined.
+   ex: getorderform/search?receiveSationName=S1&adStatus=Ongoing
+       _id: search by ObjectId  ex:'5a3088f79a456321b0355808' do not work for agent privilege 
+       receiveSationName:   ex 'S1'   for agent privilege fixxed in its stationname
+       adStatus: search by status. ex: 'Pending'
+       publishStationName: ex: 'S1'    for agent privilege fixxed in its stationname
+       beginBeforeDate&beginAfterDate&endAfterDate&endBeforeDate:  '2017-08-09'
 
-For example, as route middleware in an [Express](http://expressjs.com/)
-application:
 
-    app.get('/private', 
-      passport.authenticate('digest', { session: false }),
-      function(req, res) {
-        res.json(req.user);
-      });
+'all':
+   return all the orderform 
+   do not work for agent privilege.
 
-#### Examples
+'nothing':
+   you will get error
+ 
+ 
+ DELETE
+ /orderform/deleteorderform
+ orderform/checkOrder/delete?paymentId=5a347b9adf3486119c5c8633
 
-For a complete, working example, refer to the [Digest example](https://github.com/passport/express-3.x-http-digest-example).
 
-## Tests
 
-    $ npm install --dev
-    $ make test
 
-[![Build Status](https://secure.travis-ci.org/jaredhanson/passport-http.png)](http://travis-ci.org/jaredhanson/passport-http)
 
-## Credits
+ADD 
+payment History
+/orderform/checkOrder/paycheckOrder
+add a payment history to checkorderId
+{
+  "checkOrderId":"5a20e169ee21392b8ca9b1ae",
+  "payDay":"2017-12-01T04:58:17.456Z",
+  "paymentAmount":80
+}
 
-  - [Jared Hanson](http://github.com/jaredhanson)
 
-## License
+UPDATE
+/orderform/checkOrder/updatepayorder'
+paymentId must exist 
+{
+  "paymentId":"5a21fc9a8166fe1f74c47c8d",
+  "payDay":"2017-12-01T04:58:17.456Z",
+  "paymentAmount":800
+}
 
-[The MIT License](http://opensource.org/licenses/MIT)
+DELETE
+/orderform/checkOrder/delete
+orderform/checkOrder/delete?paymentId=5a347b9adf3486119c5c8633
 
-Copyright (c) 2011-2013 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
-
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/vK9dyjRnnWsMzzJTQ57fRJpH/jaredhanson/passport-http'>  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/vK9dyjRnnWsMzzJTQ57fRJpH/jaredhanson/passport-http.svg' /></a>

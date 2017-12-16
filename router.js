@@ -3,14 +3,13 @@ const passport = require('./config/passport');
 const userController = require('./controllers/userController');
 const orderformController = require('./controllers/orderformController');
 const isAuthenticated = require('./controllers/authController').isAuthenticated;
-const loginUser = require('./controllers/authController').loginUser;
+const loginUser = require('./controllers/authController');
 
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const json_body_parser = bodyParser.json();
 const urlencoded_body_parser = bodyParser.urlencoded({extended: true});
-
 
 let app = express();
 
@@ -51,16 +50,21 @@ app.get('/checkhealth', isAuthenticated('Agent'), function (req, res) {
 app.post('/user/addagent', isAuthenticated('Admin'), userController.addAgent);//done
 app.post('/user/addadmin', isAuthenticated('Super_Admin'), userController.addAdmin);//done
 app.post('/user/updatepassword', isAuthenticated('Agent'), userController.updatepassword);//done
-app.post('/user/mystations', isAuthenticated('Agent'), userController.getMyRegisterAgents);//done加个本区域
+
+app.get('/user/mystations', isAuthenticated('Admin'), userController.getMyRegisterAgents);//done加个本区域
+app.get('/user/:country', isAuthenticated('Super_Admin'), userController.getArea);//done
 
 app.post('/orderform/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE
 app.get('/orderform/getorderform/:option', isAuthenticated('Agent'), orderformController.getOrderform);
 app.post('/orderform/updateorderform', isAuthenticated('Admin'), orderformController.updateOrderForm);//done
+app.delete('/orderform/deleteorderform', isAuthenticated('Admin'), orderformController.deleteOrderForm);//done
 
-app.post('/orderform/checkOrder/paycheckOrder', isAuthenticated('Admin'), orderformController.payAmount);//done
-app.post('/orderform/checkOrder/updatepayorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
-app.post('/orderform/checkOrder/deletepayorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
 
-app.post('/login', loginUser);
+app.post('/orderform/checkOrder/paycheckorder', isAuthenticated('Admin'), orderformController.payAmount);//done
+app.post('/orderform/checkOrder/updatecheckorder', isAuthenticated('Admin'), orderformController.updatePayment);//done
+app.delete('/orderform/checkOrder/deletecheckorder', isAuthenticated('Admin'), orderformController.deletePayment);//done
+
+app.post('/login', loginUser.loginUser);
+app.post('/logout', loginUser.logoutUser);
 app.listen(3000);
 console.log("Begin Server");

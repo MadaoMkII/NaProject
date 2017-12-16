@@ -22,11 +22,6 @@ exports.getOrderform = (req, res) => {
     switch (option) {
 
         case 'search':
-
-            if (req.user.role === 'Agent' && Object.keys(req.query).length === 0) {
-                return res.status(403).json({success: false, message: 'Insufficient privilege'});
-            }
-
             if (req.query._id) {
                 if (req.user.role === 'Agent') {
                     return res.status(403).json({success: false, message: 'Insufficient privilege'});
@@ -34,7 +29,6 @@ exports.getOrderform = (req, res) => {
                 command['_id'] = {$eq: req.query._id};
                 break;
             }
-
 
             if (req.query['receiveSationName']) {
                 if (req.user.role.toString() === 'Agent') {
@@ -79,8 +73,18 @@ exports.getOrderform = (req, res) => {
                     $gt: new Date(req.body['beginAfterDate'])
                 };
             }
+            if (Object.keys(req.query).length === 0) {
+                return res.status(403).json({success: false, message: 'No search condition!'});
+            }
             break;
 
+        case 'all':
+            if (req.user.role === 'Agent' && Object.keys(req.query).length === 0) {
+                return res.status(403).json({success: false, message: 'Insufficient privilege'});
+            } else {
+                command = null;
+            }
+            break;
         default:
             return res.status(406).json({success: false, message: 'Need correct param send'});
     }
@@ -97,6 +101,21 @@ exports.getOrderform = (req, res) => {
         }
     );
 };
+exports.deleteOrderForm = (req, res) => {
+
+    orderModel.remove({_id: req.query['_id']}, (err) => {
+            if (err) {
+                logger.info(req.body);
+                logger.error('Error location : Class: orderformController, function: updateOrderForm. ' + err);
+                logger.error('Response code:406, message: Not Successed Saved');
+                return res.status(406).send({success: false, message: 'Not Successed Saved'});
+            } else {
+                return res.status(200).send({success: true, message: 'Successed Updated'});
+            }
+        }
+    );
+};
+
 
 exports.updateOrderForm = (req, res) => {
     if (req.body['rebuilt']) {
@@ -116,18 +135,17 @@ exports.updateOrderForm = (req, res) => {
                     adStatus: req.body.adStatus,
                     adType: req.body.adType,
                     adName: req.body.adName,
-                    adBeginDate: req.body.adBeginDate,
-                    adEndDate: req.body.adEndDate,
+                    adBeginDate: new Date(req.body.adBeginDate),
+                    adEndDate: new Date(req.body.adEndDate),
                     publishType: req.body.publishType,
                     customerName: req.body.customerName,
                     paymentMethod: req.body.paymentMethod,
                     customerWechat: req.body.customerWechat,
                     customerPhone: req.body.customerPhone,
+                    orderTotalAmont: req.body.orderTotalAmont,
                     remark: req.body.remark
-
                 }
-            },
-            (err) => {
+            }, (err) => {
                 if (err) {
                     logger.info(req.body);
                     logger.error('Error location : Class: orderformController, function: updateOrderForm. ' + err);
@@ -335,7 +353,7 @@ exports.updatePayment = (req, res) => {
 
 exports.deletePayment = (req, res) => {
     let paymentElement = {};
-    paymentElement.paymentId = req.body['paymentId'];
+    paymentElement.paymentId = req.query['paymentId'];
     orderModel.update({
         'checkOrderRecords._id': paymentElement.checkOrderId
     }, {

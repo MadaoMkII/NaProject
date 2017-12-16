@@ -77,12 +77,22 @@ exports.getMyRegisterAgents = (req, res) => {
     })
 };
 
+exports.getArea = (req, res) => {
+
+    agentModel.find({country: req.params.country}, {password: 0}, (err, agents) => {
+        if (err) {
+            return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
+        }
+        return res.status(200).json(agents);
+    })
+};
+
 
 exports.updatepassword = (req, res) => {
     let hashedPassword =
-        require('crypto').createHash('md5').update(req.body.password + config.saltword).digest('hex');
+        require('crypto').createHash('md5').update(req.body['newpassword'] + config.saltword).digest('hex');
 
-    agentModel.update({username: req.user.stationname}, {$set: {password: hashedPassword}}, (err) => {
+    agentModel.update({username: req.user.username}, {$set: {password: hashedPassword}}, (err) => {
         if (err) {
             return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
         }
