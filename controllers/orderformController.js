@@ -90,7 +90,10 @@ exports.getOrderform = (req, res) => {
     }
 
     let sorter = {};
-    if (req.query['order']) {
+
+    if (!sorter[req.query['order']]) {
+        sorter = null;
+    } else if (req.query['order']) {
         sorter[req.query['sortBy']] = req.query['order'];
     } else {
         sorter[req.query['sortBy']] = 1;
@@ -107,7 +110,8 @@ exports.getOrderform = (req, res) => {
             }
         }
     );
-};
+}
+;
 exports.deleteOrderForm = (req, res) => {
 
     orderModel.remove({_id: req.query['_id']}, (err) => {
