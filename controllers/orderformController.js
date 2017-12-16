@@ -89,8 +89,13 @@ exports.getOrderform = (req, res) => {
             return res.status(406).json({success: false, message: 'Need correct param send'});
     }
 
-    let sorter= {};
-    sorter[req.query['sortBy']]= req.query['order'];
+    let sorter = {};
+    if (req.query['order']) {
+        sorter[req.query['sortBy']] = req.query['order'];
+    } else {
+        sorter[req.query['sortBy']] = 1;
+    }
+
     orderModel.find(command, {__v: 0}, {sort: sorter}, (err, data) => {
             if (err) {
                 logger.info(req.body);

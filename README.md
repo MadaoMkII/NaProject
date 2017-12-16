@@ -76,7 +76,7 @@ add a new orderform
 7,GET
 /orderform/getorderform/:option
 There are 3 options for parameter:
-ex:  /orderform/getorderform/search?receiveSationName=S1&publishStationName=S3
+ex:  /orderform/getorderform/all?sortBy=orderTotalAmont&order=1
 
 
 search:
@@ -96,6 +96,8 @@ search:
 '':
    you will get error
  
+sortBy sort result by query
+order -1 means descending 1 means normal 
 
 8，POST
 /orderform/updateorderform
