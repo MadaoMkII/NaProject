@@ -51,7 +51,7 @@ app.post('/user/addagent', isAuthenticated('Admin'), userController.addAgent);//
 app.post('/user/addadmin', isAuthenticated('Super_Admin'), userController.addAdmin);//done
 app.post('/user/updatepassword', isAuthenticated('Agent'), userController.updatepassword);//done
 
-app.get('/user/mystations', isAuthenticated('Admin'), userController.getMyRegisterAgents);//done加个本区域
+app.get('/user/mystations', isAuthenticated('Admin'), userController.getMyRegisterAgents);//done
 app.get('/user/:country', isAuthenticated('Super_Admin'), userController.getArea);//done
 
 app.post('/orderform/addorderform', isAuthenticated('Agent'), orderformController.addOrderForm);//DONE

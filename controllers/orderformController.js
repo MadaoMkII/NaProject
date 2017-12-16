@@ -89,7 +89,9 @@ exports.getOrderform = (req, res) => {
             return res.status(406).json({success: false, message: 'Need correct param send'});
     }
 
-    orderModel.find(command, {__v: 0}, (err, data) => {
+    let sorter= {};
+    sorter[req.query['sortBy']]= req.query['order'];
+    orderModel.find(command, {__v: 0}, {sort: sorter}, (err, data) => {
             if (err) {
                 logger.info(req.body);
                 logger.error('Error location : Class: orderformController, function: getOrderForm. ' + err);
