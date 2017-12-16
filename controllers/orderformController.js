@@ -354,6 +354,7 @@ exports.updatePayment = (req, res) => {
 exports.deletePayment = (req, res) => {
     let paymentElement = {};
     paymentElement.paymentId = req.query['paymentId'];
+    paymentElement.checkOrderId = req.query['checkOrderId'];
     orderModel.update({
         'checkOrderRecords._id': paymentElement.checkOrderId
     }, {
